@@ -1,6 +1,11 @@
 # Changelog
 
 ## [1.0.0] - Initial Open Source Release
+Changed: unavailable settings no longer count in the setup score or its suggested changes.
+
+Changed: the review basket is now called the review list.
+
+Added: the setup score now shows on the Scout page after the PC check. Click it to open a list of the settings still off (Safe items start on, Careful and Advanced are optional). The score refreshes after Apply or Undo and the What changed page shows how it moved.
 
 StreamReady (Open Source Edition): MIT licensed, fully unlocked, no activation.
 

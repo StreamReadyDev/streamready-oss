@@ -9,7 +9,7 @@ QUICK START
 1. Extract the zip, then double-click "Run StreamReady.bat". Approve the Windows administrator prompt.
 2. Read the short welcome and choose Get started (or press Skip).
 3. On Home, pick a Quick preset or a goal. It opens a list. Nothing is changed yet.
-4. Choose Add to review basket, then Review and apply. Read the list and remove anything you do not want.
+4. Choose Add to review list, then Review and apply. Read the list and remove anything you do not want.
 5. Choose Apply now. Read "What changed". Restart if it asks you to.
 
 Changed your mind? Every setting you apply has an Undo. Use the Undo next to one item, or Undo Last Batch (bottom left) for everything you just applied.
@@ -44,12 +44,12 @@ Home has four parts:
 
 Two more goal tiles (laptop battery and one specific game) are marked "Paid version". They open a page that explains what the paid edition adds.
 
-On a preset or goal page, switch items on or off, then choose Add to review basket. Nothing runs until you press Apply.
+On a preset or goal page, switch items on or off, then choose Add to review list. Nothing runs until you press Apply.
 
 
-3. THE REVIEW BASKET AND RISK LABELS
+3. THE REVIEW LIST AND RISK LABELS
 
-The basket lists everything you have chosen. Choose Review and apply (bottom right) to open it. Use Remove on anything you do not want, then choose Apply now.
+The review list lists everything you have chosen. Choose Review and apply (bottom right) to open it. Use Remove on anything you do not want, then choose Apply now.
 
 Every setting has a risk label:
 
@@ -75,7 +75,7 @@ While the changes run (the app shows an Applying page), keep the window open. Th
 
 If a restart is needed, save your work and choose Restart now, or choose Restart later.
 
-Tools marked "Applies immediately" (cleaning temporary files, installing a program and similar) act the moment you click them and do not use the basket. Where an original exists they record it. Some things cannot be put back, for example deleted temporary files. The app says so before it starts.
+Tools marked "Applies immediately" (cleaning temporary files, installing a program and similar) act the moment you click them and do not use the review list. Where an original exists they record it. Some things cannot be put back, for example deleted temporary files. The app says so before it starts.
 
 
 5. UNDO
@@ -97,7 +97,7 @@ If the list of saved originals is ever damaged, the app stops and says so, and H
 
 6. PRO VIEW
 
-Use the Simple / Pro switch at the top. Both views share one basket and one history.
+Use the Simple / Pro switch at the top. Both views share one review list and one history.
 
 Pro has one list of areas on the left:
 
@@ -113,7 +113,7 @@ Pro has one list of areas on the left:
 
 Below those: My PC, History and Undo, Settings.
 
-Each setting shows a plain name, a one-line explanation, its risk label and its original name in small grey text. Switches add settings to the basket.
+Each setting shows a plain name, a one-line explanation, its risk label and its original name in small grey text. Switches add settings to the review list.
 
 Note: "Select all" on the Everything page ticks every setting that fits your PC, including Careful and Advanced ones, unless Safe Mode is on. Review the list before you apply.
 
@@ -149,7 +149,7 @@ My PC is a read-only page about your hardware. Opening it changes nothing.
 10. WHAT IS NEW IN THIS RELEASE
 
 The full list is in CHANGELOG.txt. In short:
-- The new look: Simple and Pro views, a short welcome, Home with Quick presets and goals, the review basket, What changed, History and Undo, My PC, and one navigation of area pages in Pro with no Classic panels tab.
+- The new look: Simple and Pro views, a short welcome, Home with Quick presets and goals, the review list, What changed, History and Undo, My PC, and one navigation of area pages in Pro with no Classic panels tab.
 - Safe / Careful / Advanced badges on every setting.
 - Safe Mode that also locks tools that act immediately.
 - The full Undo engine, the same as the paid edition, with saved originals that survive a restart.
@@ -163,7 +163,7 @@ Will this give me more FPS?
 There is no fixed promise. Results depend on your PC and games. Make small changes and compare the same game before and after.
 
 Did choosing a goal or preset change Windows?
-No. It only fills the basket. Windows changes only when you press Apply now.
+No. It only fills the review list. Windows changes only when you press Apply now.
 
 Can I Undo after restarting?
 Yes. Open History and Undo. A few items (such as OneDrive removal) can only show you the steps to put them back by hand, and they say so.

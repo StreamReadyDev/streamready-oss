@@ -8,8 +8,8 @@ StreamReady is a Windows optimisation toolkit for gamers and streamers. It is a 
 
 StreamReady opens in **Simple** view on a fresh install, with a short welcome the first time. A **Pro** view is one click away for people who want every setting:
 
-- **Simple**: a Home page with a setup score, live CPU / GPU / RAM / ping tiles, a **Quick presets** row (Gaming and Streaming) and goal tiles (Play games smoothly, Stream without lag, Fix my internet and ping, Speed up and clean my PC, Protect my privacy, Fix a problem). A goal or preset first opens a preview page: every setting is a row with a switch, a plain reason, a Safe / Careful / Advanced badge and its original name. Safe items start switched on. Careful and Advanced items are listed too: on a preset page they start switched on (outside Safe Mode) so you can see the whole list, and you can switch any of them off; a goal page starts only the Safe items on. Nothing reaches your review basket until you press Add to review basket, and an Advanced item still needs the "I understand" tick before Apply. Nothing is applied until you press Apply in the review basket.
-- **Review basket**: see exactly what you picked before anything changes. Advanced settings need an extra "I understand" tick. Nothing is applied until you press Apply.
+- **Simple**: a Home page with a setup score, live CPU / GPU / RAM / ping tiles, a **Quick presets** row (Gaming and Streaming) and goal tiles (Play games smoothly, Stream without lag, Fix my internet and ping, Speed up and clean my PC, Protect my privacy, Fix a problem). A goal or preset first opens a preview page: every setting is a row with a switch, a plain reason, a Safe / Careful / Advanced badge and its original name. Safe items start switched on. Careful and Advanced items are listed too: on a preset page they start switched on (outside Safe Mode) so you can see the whole list, and you can switch any of them off; a goal page starts only the Safe items on. Nothing reaches your review list until you press Add to review list, and an Advanced item still needs the "I understand" tick before Apply. Nothing is applied until you press Apply in the review list.
+- **Review list**: see exactly what you picked before anything changes. Advanced settings need an extra "I understand" tick. Nothing is applied until you press Apply.
 - **What changed** after every Apply, with an Undo for each setting, plus **History and Undo**.
 - **Pro**: one navigation of areas on the left: Everything (a searchable list of all 105 settings with filters and your quick presets), Gaming and speed, Graphics, Internet and network, Privacy, Windows tweaks, Updates and apps, System and storage, Downloads, My PC, History and Undo, and Settings. Every setting and every tool sits inside its area with a plain title, a one-line description, a risk badge, an "Applies immediately" tag for tools that act at once, and its original name in small grey text. Search (top bar or Ctrl+K) finds areas, tools and settings.
 - **Safe Mode**: only Safe settings can be switched on, and tools that act immediately and are not Safe are locked. **Larger text**, a **Jargon Buster** glossary and a **My PC** page are included.
@@ -19,7 +19,7 @@ StreamReady opens in **Simple** view on a fresh install, with a short welcome th
 
 ![History and Undo, with a saved original from an earlier session](docs/screenshots/history.png)
 
-![Review basket](docs/screenshots/basket.png)
+![Review list](docs/screenshots/basket.png)
 
 ![Pro: Everything](docs/screenshots/pro-table.png)
 
@@ -33,7 +33,7 @@ A preset preview and a Pro area page:
 
 Most tweak tools ask you to trust them. StreamReady is built so you don't have to:
 
-- **A restore point is tried before each batch of settings.** It can fail (Windows limits how often it makes one, or System Restore may be off), and the app says so. It is a last resort, not the way to undo one setting; Undo uses the saved originals. Tools that act immediately (marked "Applies immediately") do not go through the basket and do not make a restore point; they have their own recorded originals where that is possible, and some things cannot be put back (see the grades below).
+- **A restore point is tried before each batch of settings.** It can fail (Windows limits how often it makes one, or System Restore may be off), and the app says so. It is a last resort, not the way to undo one setting; Undo uses the saved originals. Tools that act immediately (marked "Applies immediately") do not go through the review list and do not make a restore point; they have their own recorded originals where that is possible, and some things cannot be put back (see the grades below).
 - **Undo that survives a restart.** "Undo Last Batch" reverses exactly what the last Apply changed, and History and Undo lists saved originals from earlier sessions with their own Undo buttons.
 - **Everything is logged.** Every change and every undo is written to a log file you can read.
 - **High-risk tweaks are off by default** and clearly labelled.

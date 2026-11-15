@@ -658,6 +658,21 @@ if ($script:GpuVendor -ne "none") {
             </Setter.Value>
         </Setter>
     </Style>
+    <Style x:Key="ScoreCardButton" TargetType="Button">
+        <Setter Property="Background" Value="#0d0d16"/><Setter Property="Foreground" Value="#edecf3"/>
+        <Setter Property="BorderBrush" Value="#28242f"/><Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="14"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}"><ContentPresenter HorizontalAlignment="Stretch"/></Border>
+        </ControlTemplate></Setter.Value></Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True"><Setter Property="BorderBrush" Value="#a78bff"/><Setter Property="Background" Value="#171326"/></Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True"><Setter Property="BorderBrush" Value="#a78bff"/><Setter Property="BorderThickness" Value="2"/></Trigger>
+            <Trigger Property="IsEnabled" Value="False"><Setter Property="Cursor" Value="Arrow"/></Trigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- v7 shell styles (top bar, mode switch, goal cards, links, big Undo) -->
     <Style x:Key="BtnSeg" TargetType="Button">
         <Setter Property="Background"      Value="Transparent"/>
@@ -1110,7 +1125,7 @@ if ($script:GpuVendor -ne "none") {
                             <StackPanel>
                                 <TextBlock Text="PRESETS" FontSize="11" FontWeight="Bold" Foreground="#c9c7d6" Margin="0,0,0,8"/>
                                 <Separator Style="{StaticResource Sep}"/>
-                                <TextBlock Text="Pick a preset to tick a recommended set of tweaks. Nothing is applied until you review your basket and press Apply."
+                                <TextBlock Text="Pick a preset to tick a recommended set of tweaks. Nothing is applied until you review your list and press Apply."
                                            FontSize="10.5" Foreground="#8b8b9c" TextWrapping="Wrap" Margin="0,2,0,8"/>
                                 <UniformGrid Rows="1" Columns="2">
                                     <Button x:Name="BtnDashPresetGaming"    Content="Gaming"    Style="{StaticResource BtnSmall}" Margin="0,0,4,0" ToolTip="Safe latency and performance tweaks, no usability loss"/>
@@ -1153,7 +1168,7 @@ if ($script:GpuVendor -ne "none") {
                 <Border Style="{StaticResource Card}">
                     <StackPanel>
                         <TextBlock Text="SELECTION TOOLS" Style="{StaticResource SecHdr}"/>
-                        <TextBlock Text="Use these to quickly select or clear settings, then review your basket and press Apply."
+                        <TextBlock Text="Use these to quickly select or clear settings, then review your list and press Apply."
                                    Style="{StaticResource Desc}" Margin="0,0,0,10"/>
                         <WrapPanel>
                             <!-- Preset buttons are intentionally not shown here - presets only appear on the Dashboard.
@@ -1937,6 +1952,11 @@ if ($script:GpuVendor -ne "none") {
 
             <!-- First run: a short plain welcome -->
             <StackPanel x:Name="PageWelcome" Visibility="Collapsed" HorizontalAlignment="Center" Width="600">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                    <Border BorderBrush="#7c5cff" BorderThickness="0,0,0,2" Padding="12,4" Margin="4,0"><TextBlock Text="1  Welcome" FontSize="12" FontWeight="SemiBold" Foreground="#a78bff"/></Border>
+                    <Border BorderBrush="#28242f" BorderThickness="0,0,0,2" Padding="12,4" Margin="4,0"><TextBlock Text="2  Your PC" FontSize="12" FontWeight="SemiBold" Foreground="#8b8b9c"/></Border>
+                    <Border BorderBrush="#28242f" BorderThickness="0,0,0,2" Padding="12,4" Margin="4,0"><TextBlock Text="3  Your plan" FontSize="12" FontWeight="SemiBold" Foreground="#8b8b9c"/></Border>
+                </StackPanel>
                 <Canvas Width="54" Height="54" HorizontalAlignment="Center" Margin="0,8,0,12">
                     <Ellipse Width="54" Height="54" Fill="#7c5cff"/>
                     <Ellipse Width="7" Height="7" Fill="White" Canvas.Left="14" Canvas.Top="18"/>
@@ -1957,6 +1977,42 @@ if ($script:GpuVendor -ne "none") {
                     </StackPanel>
                 </Border>
             </StackPanel>
+            <!-- Scout step 2: read-only PC check -->
+            <StackPanel x:Name="PageScan" Visibility="Collapsed" HorizontalAlignment="Center" Width="600">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                    <Border BorderBrush="#28242f" BorderThickness="0,0,0,2" Padding="12,4" Margin="4,0"><TextBlock Text="1  Welcome" FontSize="12" FontWeight="SemiBold" Foreground="#8b8b9c"/></Border>
+                    <Border BorderBrush="#7c5cff" BorderThickness="0,0,0,2" Padding="12,4" Margin="4,0"><TextBlock Text="2  Your PC" FontSize="12" FontWeight="SemiBold" Foreground="#a78bff"/></Border>
+                    <Border BorderBrush="#28242f" BorderThickness="0,0,0,2" Padding="12,4" Margin="4,0"><TextBlock Text="3  Your plan" FontSize="12" FontWeight="SemiBold" Foreground="#8b8b9c"/></Border>
+                </StackPanel>
+                <TextBlock Text="Here is what Scout found on your PC." FontSize="26" FontWeight="SemiBold" Foreground="#edecf3"/>
+                <TextBlock x:Name="ScanIntro" Text="This check only reads your PC. Nothing was changed. I use it to suggest settings that fit." FontSize="14" Foreground="#c9c7d6" TextWrapping="Wrap" Margin="0,6,0,16"/>
+                <Border Margin="0,0,0,14"><Button x:Name="BtnScanScore" Style="{StaticResource ScoreCardButton}" IsEnabled="False" AutomationProperties.HelpText="Counts checkable gaming settings, not PC speed.">
+    <StackPanel><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+        <Grid Width="76" Height="76" Margin="0,0,12,0"><Ellipse Width="76" Height="76" Stroke="#28242f" StrokeThickness="8"/>
+            <Ellipse x:Name="ScanRingArc" Width="76" Height="76" Stroke="#a78bff" StrokeThickness="8" StrokeDashArray="0,100" StrokeDashCap="Round" RenderTransformOrigin="0.5,0.5"><Ellipse.RenderTransform><RotateTransform Angle="-90"/></Ellipse.RenderTransform></Ellipse>
+            <StackPanel VerticalAlignment="Center"><TextBlock x:Name="ScanScoreNum" Text="-" FontSize="24" FontWeight="SemiBold" Foreground="#edecf3" HorizontalAlignment="Center"/><TextBlock Text="/ 100" FontSize="10" Foreground="#8b8b9c" HorizontalAlignment="Center"/></StackPanel>
+        </Grid>
+        <StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock x:Name="ScanScoreTitle" Text="Checking..." FontSize="14" FontWeight="SemiBold" Foreground="#edecf3" TextWrapping="Wrap"/><TextBlock x:Name="ScanScoreSub" Text="Not a speed score" FontSize="12" Foreground="#c9c7d6" TextWrapping="Wrap" Margin="0,3,0,0"/></StackPanel>
+    </Grid><TextBlock x:Name="ScanScoreLink" Text="" FontSize="12" Foreground="#a78bff" TextWrapping="Wrap" Margin="0,8,0,0"/><TextBlock x:Name="ScanScoreExcluded" Text="" FontSize="11" Foreground="#8b8b9c" TextWrapping="Wrap" Margin="0,6,0,0" Visibility="Collapsed"/></StackPanel>
+</Button>
+</Border>
+                <StackPanel x:Name="ScanList"/>
+            </StackPanel>
+
+            <!-- Scout step 3: short plan -->
+            <StackPanel x:Name="PagePlan" Visibility="Collapsed" HorizontalAlignment="Center" Width="640">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                    <Border BorderBrush="#28242f" BorderThickness="0,0,0,2" Padding="12,4" Margin="4,0"><TextBlock Text="1  Welcome" FontSize="12" FontWeight="SemiBold" Foreground="#8b8b9c"/></Border>
+                    <Border BorderBrush="#28242f" BorderThickness="0,0,0,2" Padding="12,4" Margin="4,0"><TextBlock Text="2  Your PC" FontSize="12" FontWeight="SemiBold" Foreground="#8b8b9c"/></Border>
+                    <Border BorderBrush="#7c5cff" BorderThickness="0,0,0,2" Padding="12,4" Margin="4,0"><TextBlock Text="3  Your plan" FontSize="12" FontWeight="SemiBold" Foreground="#a78bff"/></Border>
+                </StackPanel>
+                <TextBlock x:Name="PlanTitle" Text="Here is what I suggest." FontSize="26" FontWeight="SemiBold" Foreground="#edecf3"/>
+                <TextBlock x:Name="PlanIntro" Text="" FontSize="14" Foreground="#c9c7d6" TextWrapping="Wrap" Margin="0,6,0,16"/>
+                <StackPanel x:Name="PlanList"/>
+                <TextBlock x:Name="PlanMore" Text="" FontSize="13" Foreground="#8b8b9c" TextWrapping="Wrap" Margin="2,4,0,0"/>
+            </StackPanel>
+
+
             <!-- Home: health ring + four live tiles + Fix what matters most + eight goals -->
             <StackPanel x:Name="PageHome" Visibility="Collapsed">
                 <DockPanel Margin="0,0,0,14" LastChildFill="False">
@@ -1971,30 +2027,16 @@ if ($script:GpuVendor -ne "none") {
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Background="#0d0d16" BorderBrush="#28242f" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,10,0">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Grid Width="76" Height="76" Margin="0,0,12,0">
-                                    <Ellipse Width="76" Height="76" Stroke="#28242f" StrokeThickness="8"/>
-                                    <Ellipse x:Name="HomeRingArc" Width="76" Height="76" Stroke="#a78bff" StrokeThickness="8"
-                                             StrokeDashArray="0,100" StrokeDashCap="Round" RenderTransformOrigin="0.5,0.5">
-                                        <Ellipse.RenderTransform><RotateTransform Angle="-90"/></Ellipse.RenderTransform>
-                                    </Ellipse>
-                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <TextBlock x:Name="HomeScoreNum" Text="-" FontSize="24" FontWeight="SemiBold" Foreground="#edecf3" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="/ 100" FontSize="10" Foreground="#8b8b9c" HorizontalAlignment="Center" Margin="0,-2,0,0"/>
-                                    </StackPanel>
-                                </Grid>
-                                <StackPanel VerticalAlignment="Center" MaxWidth="150">
-                                    <TextBlock x:Name="HomeScoreTitle" Text="Checking..." FontSize="14" FontWeight="SemiBold" Foreground="#edecf3" TextWrapping="Wrap"/>
-                                    <TextBlock x:Name="HomeScoreSub" Text="" FontSize="12" Foreground="#c9c7d6" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                                </StackPanel>
-                            </StackPanel>
-                            <Button x:Name="BtnScoreInfo" Content="How this score works" Style="{StaticResource BtnLink}" FontSize="12" Margin="0,8,0,0"/>
-                            <TextBlock x:Name="HomeScoreExplain" Visibility="Collapsed" FontSize="12" Foreground="#8b8b9c" TextWrapping="Wrap" Margin="0,4,0,0"
-                                       Text="The score is the share of the checkable gaming settings that are already on. It is a simple guide, not a promise of more speed."/>
-                        </StackPanel>
-                    </Border>
+<StackPanel Grid.Column="0" Margin="0,0,10,0"><Button x:Name="BtnHomeScore" Style="{StaticResource ScoreCardButton}" IsEnabled="False" AutomationProperties.HelpText="Counts checkable gaming settings, not PC speed.">
+    <StackPanel><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+        <Grid Width="76" Height="76" Margin="0,0,12,0"><Ellipse Width="76" Height="76" Stroke="#28242f" StrokeThickness="8"/>
+            <Ellipse x:Name="HomeRingArc" Width="76" Height="76" Stroke="#a78bff" StrokeThickness="8" StrokeDashArray="0,100" StrokeDashCap="Round" RenderTransformOrigin="0.5,0.5"><Ellipse.RenderTransform><RotateTransform Angle="-90"/></Ellipse.RenderTransform></Ellipse>
+            <StackPanel VerticalAlignment="Center"><TextBlock x:Name="HomeScoreNum" Text="-" FontSize="24" FontWeight="SemiBold" Foreground="#edecf3" HorizontalAlignment="Center"/><TextBlock Text="/ 100" FontSize="10" Foreground="#8b8b9c" HorizontalAlignment="Center"/></StackPanel>
+        </Grid>
+        <StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock x:Name="HomeScoreTitle" Text="Checking..." FontSize="14" FontWeight="SemiBold" Foreground="#edecf3" TextWrapping="Wrap"/><TextBlock x:Name="HomeScoreSub" Text="Not a speed score" FontSize="12" Foreground="#c9c7d6" TextWrapping="Wrap" Margin="0,3,0,0"/></StackPanel>
+    </Grid><TextBlock x:Name="HomeScoreLink" Text="" FontSize="12" Foreground="#a78bff" TextWrapping="Wrap" Margin="0,8,0,0"/><TextBlock x:Name="HomeScoreExcluded" Text="" FontSize="11" Foreground="#8b8b9c" TextWrapping="Wrap" Margin="0,6,0,0" Visibility="Collapsed"/></StackPanel>
+</Button>
+<Button x:Name="BtnScoreInfo" Content="How this score works" Style="{StaticResource BtnLink}" FontSize="12" Margin="0,8,0,0"/><TextBlock x:Name="HomeScoreExplain" Visibility="Collapsed" FontSize="12" Foreground="#8b8b9c" TextWrapping="Wrap" Margin="0,4,0,0" Text="This is the share of checkable gaming settings that are on, not a speed score. Select the score to see what is left. More is not always better for your PC."/></StackPanel>
                     <Border Grid.Column="1" Background="#0d0d16" BorderBrush="#28242f" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,10,0">
                         <StackPanel>
                             <TextBlock Text="Processor / CPU" FontSize="12" Foreground="#8b8b9c"/>
@@ -2092,8 +2134,8 @@ if ($script:GpuVendor -ne "none") {
                             <TextBlock Text="Start with a little." FontSize="17" FontWeight="SemiBold" Foreground="#edecf3"/>
                             <TextBlock Text="Try a few changes, then see how your PC feels." FontSize="13" Foreground="#c9c7d6" TextWrapping="Wrap" Margin="0,6,0,12"/>
                             <TextBlock Text="Nothing changes yet" FontSize="14" FontWeight="SemiBold" Foreground="#edecf3"/>
-                            <TextBlock Text="Your choices wait in the review basket until you press Apply." FontSize="13" Foreground="#c9c7d6" TextWrapping="Wrap" Margin="0,6,0,10"/>
-                            <Button x:Name="BtnGoalBasket" Content="Review my basket" Style="{StaticResource BtnGray}" Height="36" HorizontalAlignment="Left" Margin="0"/>
+                            <TextBlock Text="Your choices wait in the review list until you press Apply." FontSize="13" Foreground="#c9c7d6" TextWrapping="Wrap" Margin="0,6,0,10"/>
+                            <Button x:Name="BtnGoalBasket" Content="Review my list" Style="{StaticResource BtnGray}" Height="36" HorizontalAlignment="Left" Margin="0"/>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -2143,7 +2185,7 @@ if ($script:GpuVendor -ne "none") {
                 <Border Background="#0d0d16" BorderBrush="#28242f" BorderThickness="1" CornerRadius="10" Padding="18" Margin="0,0,0,12">
                     <StackPanel>
                         <TextBlock Text="How your changes are kept safe" FontSize="15" FontWeight="SemiBold" Foreground="#edecf3" Margin="0,0,0,8"/>
-                        <TextBlock Text="Settings you switch on go to the review basket, and nothing in the basket changes until you press Apply. Before a batch StreamReady tries to make a Windows restore point; that can fail, and it is a last resort, not the way to undo a single setting. Each setting saves its own original first, and Undo Last Batch (bottom left) or History puts it back. Tools marked Applies immediately act when you click them, after any confirmation: they do not use the basket, they have their own recorded originals where that is possible, and some things cannot be put back (for example deleted temporary files). See the grades in the README." FontSize="13" Foreground="#c9c7d6" TextWrapping="Wrap"/>
+                        <TextBlock Text="Settings you switch on go to the review list, and nothing in the review list changes until you press Apply. Before a batch StreamReady tries to make a Windows restore point; that can fail, and it is a last resort, not the way to undo a single setting. Each setting saves its own original first, and Undo Last Batch (bottom left) or History puts it back. Tools marked Applies immediately act when you click them, after any confirmation: they do not use the review list, they have their own recorded originals where that is possible, and some things cannot be put back (for example deleted temporary files). See the grades in the README." FontSize="13" Foreground="#c9c7d6" TextWrapping="Wrap"/>
                     </StackPanel>
                 </Border>
                 <Border Background="#0d0d16" BorderBrush="#28242f" BorderThickness="1" CornerRadius="10" Padding="18" Margin="0,0,0,12">
@@ -2191,7 +2233,7 @@ if ($script:GpuVendor -ne "none") {
                     <StackPanel>
                         <TextBlock Text="Project page" FontSize="15" FontWeight="SemiBold" Foreground="#edecf3" Margin="0,0,0,8"/>
                         <TextBlock Text="The project page is listed below. You can select and copy the address." FontSize="13" Foreground="#c9c7d6" TextWrapping="Wrap" Margin="0,0,0,8"/>
-                        <TextBox x:Name="TxtPaidLink" Text="https://github.com/StreamReadyDev/streamready-oss" IsReadOnly="True" Background="#12121d" BorderBrush="#28242f" Foreground="#a78bff" FontSize="13" Padding="8,6"/><TextBlock Text="Get the paid version" FontSize="15" FontWeight="SemiBold" Foreground="#edecf3" Margin="0,16,0,8"/><TextBox Text="https://streamready.gumroad.com/l/kwkre" IsReadOnly="True" Background="#12121d" BorderBrush="#28242f" Foreground="#a78bff" FontSize="13" Padding="8,6"/>
+                        <TextBox x:Name="TxtPaidLink" Text="https://github.com/StreamReadyDev/streamready-oss" IsReadOnly="True" Background="#12121d" BorderBrush="#28242f" Foreground="#a78bff" FontSize="13" Padding="8,6"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -2199,7 +2241,7 @@ if ($script:GpuVendor -ne "none") {
             <!-- v7 stage 2: review basket -->
             <StackPanel x:Name="PageBasket" Visibility="Collapsed" MaxWidth="900" HorizontalAlignment="Left">
                 <Button x:Name="BtnBasketBack" Content="Back" Style="{StaticResource BtnLink}" Margin="0,0,0,10"/>
-                <TextBlock Text="Review your basket" FontSize="28" FontWeight="SemiBold" Foreground="#edecf3"/>
+                <TextBlock Text="Review your changes" FontSize="28" FontWeight="SemiBold" Foreground="#edecf3"/>
                 <TextBlock x:Name="BasketTotals" Text="" FontSize="14" Foreground="#c9c7d6" Margin="0,4,0,4" TextWrapping="Wrap"/>
                 <TextBlock Text="Your originals are saved before any change, so Undo can put them back. A restore point is also tried first, as a last resort." FontSize="13" Foreground="#56dd92" TextWrapping="Wrap" Margin="0,0,0,14"/>
                 <Border x:Name="BasketAdvBox" Visibility="Collapsed" Background="#14ff6b6b" BorderBrush="#66ff6b6b" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,4,0,12">
@@ -2214,7 +2256,7 @@ if ($script:GpuVendor -ne "none") {
                     <Button x:Name="BtnBasketWhyAdmin" DockPanel.Dock="Left" Content="Why does Windows ask for permission?" Style="{StaticResource BtnLink}" Margin="18,0,0,0" VerticalAlignment="Center"/>
                 </DockPanel>
                 <StackPanel x:Name="BasketItems"/>
-                <TextBlock x:Name="BasketEmpty" Visibility="Collapsed" Text="Your basket is empty. Pick a goal on Home, or switch on settings in the table." FontSize="14" Foreground="#8b8b9c" TextWrapping="Wrap"/>
+                <TextBlock x:Name="BasketEmpty" Visibility="Collapsed" Text="Nothing is selected yet. Pick a goal on Home, or switch on settings in the table." FontSize="14" Foreground="#8b8b9c" TextWrapping="Wrap"/>
             </StackPanel>
 
             <!-- applying -->
@@ -2228,6 +2270,7 @@ if ($script:GpuVendor -ne "none") {
             <!-- what changed -->
             <StackPanel x:Name="PageResult" Visibility="Collapsed" MaxWidth="900" HorizontalAlignment="Left">
                 <TextBlock Text="What changed" FontSize="28" FontWeight="SemiBold" Foreground="#edecf3"/>
+                <TextBlock x:Name="ResultScoreChange" Text="" FontSize="13" Foreground="#a78bff" Margin="0,4,0,8" Visibility="Collapsed"/>
                 <TextBlock x:Name="ResultSummary" Text="" FontSize="14" Foreground="#c9c7d6" Margin="0,4,0,12" TextWrapping="Wrap"/>
                 <Border x:Name="RebootBanner" Visibility="Collapsed" Background="#2c2410" BorderBrush="#f0b545" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,12">
                     <DockPanel>
@@ -2321,8 +2364,19 @@ if ($script:GpuVendor -ne "none") {
                 <Button x:Name="BtnWelcomeStart" Content="Get started" Style="{StaticResource BtnPrimary}" Height="42" Padding="26,0" FontSize="15" Margin="0"/>
                 <TextBlock Text="You can choose your own settings at any time." FontSize="12" Foreground="#8b8b9c" Margin="28,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
+            <StackPanel x:Name="BarScan" Orientation="Horizontal" Visibility="Collapsed">
+                <Button x:Name="BtnScanNext" Content="See my plan" Style="{StaticResource BtnPrimary}" Height="42" Padding="26,0" FontSize="15" Margin="0"/>
+                <Button x:Name="BtnScanBack" Content="Back" Style="{StaticResource BtnLink}" Margin="18,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="This check only reads your PC." FontSize="12" Foreground="#8b8b9c" Margin="28,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel x:Name="BarPlan" Orientation="Horizontal" Visibility="Collapsed">
+                <Button x:Name="BtnPlanGo" Content="Get my PC ready" Style="{StaticResource BtnPrimary}" Height="42" Padding="26,0" FontSize="15" Margin="0"/>
+                <Button x:Name="BtnPlanSkip" Content="Skip, take me Home" Style="{StaticResource BtnLink}" Margin="18,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Ticks only what you switched on, then opens your review list. Nothing changes until you press Apply." FontSize="12" Foreground="#8b8b9c" TextWrapping="Wrap" MaxWidth="360" Margin="28,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+
             <StackPanel x:Name="BarList" Orientation="Horizontal" Visibility="Collapsed">
-                <Button x:Name="BtnListAdd" Content="Add to review basket" Style="{StaticResource BtnPrimary}" Height="42" Padding="26,0" FontSize="15" Margin="0"/>
+                <Button x:Name="BtnListAdd" Content="Add to review list" Style="{StaticResource BtnPrimary}" Height="42" Padding="26,0" FontSize="15" Margin="0"/>
                 <Button x:Name="BtnListBack" Content="Back" Style="{StaticResource BtnLink}" Margin="18,0,0,0" VerticalAlignment="Center"/>
                 <TextBlock x:Name="LblListHint" Text="Only what is switched on is added. Nothing changes until you press Apply." FontSize="12" Foreground="#8b8b9c" TextWrapping="Wrap" MaxWidth="380" Margin="28,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
@@ -2368,7 +2422,7 @@ if ($script:GpuVendor -ne "none") {
             </StackPanel>
             <Button x:Name="BtnOpenBasket" Grid.Column="2" Content="Review and apply"
                     Style="{StaticResource BtnPrimary}" Height="42" MinWidth="180" FontSize="14" IsEnabled="False" Margin="12,0,0,0"
-                    ToolTip="Open your review basket. Nothing changes until you press Apply now there."/>
+                    ToolTip="Open your review list. Nothing changes until you press Apply now there."/>
             <!-- The original apply button stays (hidden): the basket page raises its Click so the original batch engine runs. -->
             <Button x:Name="BtnApplyAll" Grid.Column="2" Content="Apply Selected" Visibility="Collapsed"
                     Style="{StaticResource BtnPrimary}" Height="42" IsEnabled="False"/>
@@ -2495,7 +2549,10 @@ $names = @(
     # v7 shell (open source edition)
     'RootGrid','ProHost','SimpleHost','SimpleScroll','ModeSwitch','BtnModeSimple','BtnModePro','TxtSearch','TxtSearchHint','BtnHelp',
     'NavRow','BtnNavHome','BtnNavMyPc','BtnNavHistory','BtnNavSettings','NavPcText',
+    'PageScan','PagePlan','ScanIntro','ScanList','PlanTitle','PlanIntro','PlanList','PlanMore','BarScan','BtnScanNext','BtnScanBack','BarPlan','BtnPlanGo','BtnPlanSkip',
     'PageWelcome','PageHome','PageGoal','PageSearch','PageHelp','PagePaid','BtnPaidBack','TxtPaidLink','BtnHelpPaid','BtnHelpJargon','BtnHelpBack',
+    'HomeScoreExcluded','ScanScoreExcluded',
+    'BtnHomeScore','HomeScoreLink','BtnScanScore','ScanRingArc','ScanScoreNum','ScanScoreTitle','ScanScoreSub','ScanScoreLink','ResultScoreChange',
     'HomeSubtitle','HomeRingArc','HomeScoreNum','HomeScoreTitle','HomeScoreSub','BtnScoreInfo','HomeScoreExplain',
     'HomeCpuVal','HomeCpuName','HomeCpuSub','HomeSparkCpu','HomeGpuVal','HomeGpuName','HomeGpuSub','HomeSparkGpu',
     'HomeRamVal','HomeRamName','HomeRamSub','HomeSparkRam','HomePingVal','HomePingName','HomePingSub','HomeSparkPing',
@@ -3257,6 +3314,7 @@ function Apply-Widgets {
         } catch {
             # Recent Windows 11 builds protect this setting (the UCPD driver blocks other programs from changing it). Nothing was changed, so this is a skip, not a failure.
             Write-SR "Windows protects the Widgets setting on this PC, so StreamReady left it unchanged. You can turn Widgets off in Settings > Personalisation > Taskbar." 'WARN'
+            $script:ScoreSkipReason = 'Protected'
             return $null
         }
     }
@@ -3693,7 +3751,7 @@ function Apply-NaglesAlgo {
         return [scriptblock]::Create("Set-Reg '$target' 'TcpAckFrequency' $vAck 'DWord'; Set-Reg '$target' 'TCPNoDelay' $vDelay 'DWord'; Set-Reg '$target' 'TcpDelAckTicks' $vTicks 'DWord'")
     } else {
         Write-SR "Could not locate active adapter interface key - skipping" 'WARN'
-        return $null
+        $script:ScoreSkipReason = 'MissingTarget'; return $null
     }
 }
 function Apply-PowerThrottle {
@@ -3930,7 +3988,7 @@ function Get-HkuPath { param([string]$SubPath)
 function Apply-GpuNvULL {
     Write-SR "Nvidia: Enabling Ultra Low Latency Mode (PreRenderedFrames=1)" 'APPLY'
     $path = Get-HkuPath "SOFTWARE\NVIDIA Corporation\Global\NvTweak"
-    if (-not $path) { return $null }
+    if (-not $path) { $script:ScoreSkipReason = 'MissingTarget'; return $null }
     if (-not (Test-Path $path)) { New-Item $path -Force | Out-Null }
     $old = (Get-ItemProperty $path -Name PreRenderedFrames -EA SilentlyContinue).PreRenderedFrames
     Set-RegLogged $path "PreRenderedFrames" 1
@@ -4305,7 +4363,7 @@ function Apply-GpuNvNpiProfile {
 
 # ── AMD tweaks ──────────────────────────────────────────────────────────────────
 function Apply-GpuAmdAntiLag {
-    if (-not $script:GpuSubkey) { Write-SR "GPU subkey not found - skipping Anti-Lag+" 'WARN'; return $null }
+    if (-not $script:GpuSubkey) { Write-SR "GPU subkey not found - skipping Anti-Lag+" 'WARN'; $script:ScoreSkipReason = 'MissingTarget'; return $null }
     if (-not (Test-UndoGpuTarget)) { Write-SR 'The graphics driver entry is not the one that was saved, so nothing was changed.' 'FAIL'; throw 'The graphics driver entry is not the one that was saved, so nothing was changed.' }
     Write-SR "AMD: Enabling Anti-Lag+" 'APPLY'
     $old = (Get-ItemProperty $script:GpuSubkey -Name KMD_EnableAntiLag -EA SilentlyContinue).KMD_EnableAntiLag
@@ -4879,10 +4937,14 @@ function Apply-NicPowerSaving {
     # Set-NetAdapterPowerManagement (which only covers WoL/ARP/NS offload, not this).
     Write-SR "Disabling NIC device power management" 'SECTION'
     $undoParts = [System.Collections.Generic.List[string]]::new()
+    $scoreProbeFailed = $false
+    $ErrorActionPreference = 'Stop'
     try {
         $adapters = Get-NetAdapterFrozen | Where-Object { $_.Status -eq 'Up' -and $_.InterfaceDescription -notmatch 'Loopback|Hyper-V|VMware|VirtualBox' }
         foreach ($a in $adapters) {
+            $previousDriverError = $Error[0]
             $sub = Get-NicDriverSubkey -InterfaceGuid $a.InterfaceGuid
+            if (-not $sub -and -not [object]::ReferenceEquals($Error[0],$previousDriverError) -and $Error[0].CategoryInfo.Category -ne 'ObjectNotFound') { $scoreProbeFailed = $true }
             if (-not $sub) { Write-SR "Driver key not found for: $($a.Name)" 'WARN'; continue }
             $old = Get-RegVal $sub 'PnPCapabilities'
             Set-RegLogged $sub 'PnPCapabilities' 24
@@ -4894,9 +4956,10 @@ function Apply-NicPowerSaving {
             }
         }
     } catch {
+        $scoreProbeFailed = $true
         Write-SR "NIC power management tweak failed: $_" 'FAIL'
     }
-    if ($undoParts.Count -eq 0) { return $null }
+    if ($undoParts.Count -eq 0) { if (-not $scoreProbeFailed) { $script:ScoreSkipReason = 'MissingTarget' }; return $null }
     return [scriptblock]::Create(($undoParts -join "`n") + "`nWrite-SR 'UNDO: NIC device power management restored' 'UNDO'")
 }
 
@@ -4905,13 +4968,15 @@ function Apply-NicEeeDisable {
     # the interrupt-moderation/offload tweaks above which apply to any active adapter.
     Write-SR "Disabling Energy Efficient Ethernet (EEE)" 'SECTION'
     $undoParts = [System.Collections.Generic.List[string]]::new()
+    $scoreProbeFailed = $false
+    $ErrorActionPreference = 'Stop'
     try {
         $adapters = Get-NetAdapterFrozen | Where-Object {
             $_.Status -eq 'Up' -and
             $_.InterfaceDescription -notmatch 'Loopback|Hyper-V|VMware|VirtualBox|Wi-Fi|Wireless|802\.11'
         }
         foreach ($a in $adapters) {
-            $props   = Get-NetAdapterAdvancedProperty -Name $a.Name -EA SilentlyContinue
+            $props   = Get-NetAdapterAdvancedProperty -Name $a.Name -EA Stop
             $eeeProp = $props | Where-Object { $_.DisplayName -match 'Energy.?Efficient.?Ethernet|Green Ethernet|EEE' } | Select-Object -First 1
             if ($eeeProp) {
                 $oldVal = $eeeProp.DisplayValue
@@ -4923,9 +4988,10 @@ function Apply-NicEeeDisable {
             }
         }
     } catch {
+        $scoreProbeFailed = $true
         Write-SR "EEE disable tweak failed: $_" 'FAIL'
     }
-    if ($undoParts.Count -eq 0) { return $null }
+    if ($undoParts.Count -eq 0) { if (-not $scoreProbeFailed) { $script:ScoreSkipReason = 'MissingTarget' }; return $null }
     return [scriptblock]::Create(($undoParts -join "`n") + "`nWrite-SR 'UNDO: Energy Efficient Ethernet restored' 'UNDO'")
 }
 
@@ -5752,7 +5818,7 @@ function Test-GameMode        { (Get-ItemProperty "HKCU:\Software\Microsoft\Game
 function Test-HwGpu           { (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name HwSchMode -EA SilentlyContinue).HwSchMode -eq 2 }
 function Test-MouseFix        { (Get-ItemProperty "HKCU:\Control Panel\Mouse" -Name MouseSpeed -EA SilentlyContinue).MouseSpeed -eq "0" }
 function Test-XboxDvr         { (Get-ItemProperty "HKCU:\System\GameConfigStore" -Name GameDVR_Enabled -EA SilentlyContinue).GameDVR_Enabled -eq 0 }
-function Test-Nagle           { $target = Get-ActiveAdapterIfacePath; if (-not $target) { return $false }; (Get-ItemProperty $target -Name TcpAckFrequency -EA SilentlyContinue).TcpAckFrequency -eq 1 }
+function Test-Nagle { $previousError = $Error[0]; $target = Get-ActiveAdapterIfacePath; if (-not $target) { if (-not [object]::ReferenceEquals($Error[0],$previousError) -and $Error[0].CategoryInfo.Category -ne 'ObjectNotFound') { throw 'Could not check network applicability.' }; return $null }; (Get-ItemProperty $target -Name TcpAckFrequency -EA SilentlyContinue).TcpAckFrequency -eq 1 }
 function Test-NetworkThrottle { [uint32](Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name NetworkThrottlingIndex -EA SilentlyContinue).NetworkThrottlingIndex -eq [uint32]0xFFFFFFFF }
 function Test-MMCSS           { (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name SystemResponsiveness -EA SilentlyContinue).SystemResponsiveness -le 10 }
 function Test-PowerThrottle   { (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" -Name PowerThrottlingOff -EA SilentlyContinue).PowerThrottlingOff -eq 1 }
@@ -5774,19 +5840,29 @@ function Test-SrTaskExists {
 function Test-TimerResolution { Test-SrTaskExists 'StreamReady_TimerRes' }
 function Test-DisableFastStartup { (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name HiberbootEnabled -EA SilentlyContinue).HiberbootEnabled -eq 0 }
 function Test-NicPowerSaving {
+    $ErrorActionPreference = 'Stop'
     $net = Get-NetworkAdapterStatus
     $a = if ($net.EthAdapter) { $net.EthAdapter } else { $net.WifiAdapter }
-    if (-not $a) { return $false }
+    if (-not $a) { return $null }
+    $previousError = $Error[0]
     $sub = Get-NicDriverSubkey -InterfaceGuid $a.InterfaceGuid
-    if (-not $sub) { return $false }
-    (Get-ItemProperty $sub -Name PnPCapabilities -EA SilentlyContinue).PnPCapabilities -eq 24
+    if (-not $sub) {
+        if (-not [object]::ReferenceEquals($Error[0],$previousError) -and $Error[0].CategoryInfo.Category -in @('PermissionDenied','SecurityError','ResourceUnavailable')) { throw 'Could not check network driver applicability.' }
+        return $null
+    }
+    $readErrors = @()
+    $value = Get-ItemProperty $sub -Name PnPCapabilities -EA SilentlyContinue -ErrorVariable readErrors
+    if (@($readErrors | Where-Object { $_.CategoryInfo.Category -ne 'ObjectNotFound' }).Count -gt 0) { throw 'Could not read network power status.' }
+    $value.PnPCapabilities -eq 24
 }
 function Test-NicEeeDisable {
+    $ErrorActionPreference = 'Stop'
     $net = Get-NetworkAdapterStatus
-    if (-not $net.EthAdapter) { return $false }
-    $p = Get-NetAdapterAdvancedProperty -Name $net.EthAdapter.Name -EA SilentlyContinue |
+    if (-not $net.EthAdapter) { return $null }
+    $p = Get-NetAdapterAdvancedProperty -Name $net.EthAdapter.Name -EA Stop |
          Where-Object { $_.DisplayName -match 'Energy.?Efficient.?Ethernet|Green Ethernet|EEE' } | Select-Object -First 1
-    return [bool]($p -and $p.DisplayValue -eq 'Disabled')
+    if (-not $p) { return $null }
+    return ($p.DisplayValue -eq 'Disabled')
 }
 function Test-GpuNvULL {
     if ($script:GpuVendor -ne "nvidia") { return $false }
@@ -5796,7 +5872,7 @@ function Test-GpuNvULL {
 }
 function Test-GpuAmdAntiLag {
     if ($script:GpuVendor -ne "amd") { return $false }
-    if (-not $script:GpuSubkey) { return $false }
+    if (-not $script:GpuSubkey) { return $null }
     (Get-ItemProperty $script:GpuSubkey -Name KMD_EnableAntiLag -EA SilentlyContinue).KMD_EnableAntiLag -eq 1
 }
 
@@ -5821,7 +5897,17 @@ $script:BadgeTests = @(
 
 function Load-ActiveBadges {
     $c['PanelActiveBadges'].Children.Clear()
-    $activeTests = $script:BadgeTests | Where-Object { try { & $_.Fn } catch { $false } }
+    $activeTests = [System.Collections.Generic.List[object]]::new()
+    $script:SetupScoreNotApplicableIds = @()
+    $script:SetupScoreApplicableIds = @()
+    foreach ($test in $script:BadgeTests) {
+        try {
+            $status = & $test.Fn
+            if ($null -eq $status) { if ($test.CheckboxName) { $script:SetupScoreNotApplicableIds += $test.CheckboxName } }
+            elseif ($status -eq $true) { $activeTests.Add($test); if ($test.CheckboxName) { $script:SetupScoreApplicableIds += $test.CheckboxName } }
+            elseif ($test.CheckboxName -and (Test-ScoreCapabilityProbe $test.CheckboxName)) { $script:SetupScoreApplicableIds += $test.CheckboxName }
+        } catch { } # A failed status read is unknown, not evidence of absence.
+    }
 
     $totalTweaks = try { $tweakBoxes.Count } catch { 0 }
     $c['LblActiveOptHeader'].Text = "ACTIVE OPTIMISATIONS - $(@($activeTests).Count) OF $totalTweaks"
@@ -5871,6 +5957,10 @@ function Load-ActiveBadges {
 
         $c['PanelActiveBadges'].Children.Add($row) | Out-Null
     }
+    $script:SetupScoreActiveIds = @($activeTests | Where-Object { $_.CheckboxName } | ForEach-Object { $_.CheckboxName })
+    $script:SetupScoreReady = $true
+    Sync-ScoreAvailability -DeferSave
+    Update-HomeScore
 }
 
 # ─── Tweak-drift detection ──────────────────────────────────────────────────────
@@ -6136,6 +6226,7 @@ $c['BtnApplyAll'].Add_Click({
     $selected = @($tweakBoxes | Where-Object { $c[$_].IsChecked })
     if ($selected.Count -eq 0) { return }
     Write-SR "StreamReady - Applying Selected Tweaks" 'SECTION'
+    $script:ScoreBeforeBatch = Get-SetupScore
     Invoke-TweakBatch -Names $selected
 })
 
@@ -6154,6 +6245,7 @@ $c['BtnReapplyDrifted'].Add_Click({
     $script:LastRestorePointOk = $null
     $script:UndoSaveFailed = $false
     $script:SrApplying = $true
+    $script:ScoreBeforeBatch = Get-SetupScore
     try { Invoke-TweakBatch -Names $names } finally { $script:SrApplying = $false }
     Complete-Batch $script:LastBatchResult $names $false
 })
@@ -6161,6 +6253,8 @@ $c['BtnReapplyDrifted'].Add_Click({
 # ─── Undo Last Batch ───────────────────────────────────────────────────────────
 $c['BtnUndoLast'].Add_Click({
     if ($script:UndoStack.Count -eq 0) { return }
+    $script:HomeLastLoad = [datetime]::MinValue
+    $scoreBeforeUndo = Get-SetupScore
     $batch = $script:UndoStack.Pop()
     $total = $batch.Count; $i = 0
     Write-SR "StreamReady - Undoing Last Batch ($total tweak$(if($total -ne 1){'s'}))" 'SECTION'
@@ -6185,6 +6279,8 @@ $c['BtnUndoLast'].Add_Click({
     # only the reversals that worked leave the batch; failed ones stay (same batch object) so they can be retried
     foreach ($k in $okKeys) { $batch.Remove($k) }
     Remove-AppliedTweakState -Names @($okKeys)
+    Load-ActiveBadges
+    Set-ScoreChange $script:CurrentEntry $scoreBeforeUndo (Get-SetupScore)
     $script:LastUndoFailed = @($failKeys)
     if ($failKeys.Count -gt 0) { $script:UndoStack.Push($batch) }
     if ($script:UndoStack.Count -eq 0) {
@@ -7989,10 +8085,10 @@ function New-TweakRow {
 # has more for the same goal ([label, section tag, optional gaming sub-tab]).
 $script:SrGoals = @(
     @{ Key='play';     Title='Play games smoothly';       Sub='Less interruption. More time in game.';     Icon='M4 8h16l3 12-6-4H7l-6 4 3-12M7 10v6m-3-3h6m7-2h1m2 3h1'
-       Intro='The Safe items below are switched on for you. Switch off anything you do not want, then press Add to review basket.'
+       Intro='The Safe items below are switched on for you. Switch off anything you do not want, then press Add to review list.'
        Links=@(,@('Gaming tools','SecGaming','')) }
     @{ Key='stream';   Title='Stream without lag';        Sub='Keep your game and stream in balance.';     Icon='M3 4h18v13H3zM8 21h8m-4-4v4m-3-13 6 4-6 3z'
-       Intro='Safe items that help a game and a stream share your PC. Switch off anything you do not want, then press Add to review basket.'
+       Intro='Safe items that help a game and a stream share your PC. Switch off anything you do not want, then press Add to review list.'
        Links=@(@('Gaming tools','SecGaming',''), @('Network','SecNetwork','')) }
     @{ Key='battery';  Title='Save battery on my laptop'; Sub='Make a little power go further.';          Icon='M2 6h19v13H2zM21 10h2v5M6 10v5m4-5v5m4-5v5'
        Locked=$true; Intro=''; Links=@() }
@@ -8003,7 +8099,7 @@ $script:SrGoals = @(
        Intro='A few Safe items that make Windows feel lighter. Cleaning tools are in System tools.'
        Links=@(@('System tools (cleanup, start-up programs)','SecSystem',''), @('Windows tweaks','SecTweaks','')) }
     @{ Key='privacy';  Title='Protect my privacy';        Sub='Choose what Windows can share.';            Icon='m12 2 9 4v7q-2 7-9 10-7-3-9-10V6zM7 12l3 3 7-7'
-       Intro='Safe items that limit what Windows collects and shows. Switch off anything you do not want, then press Add to review basket.'
+       Intro='Safe items that limit what Windows collects and shows. Switch off anything you do not want, then press Add to review list.'
        Links=@(,@('Privacy settings','SecPrivacy','')) }
     @{ Key='game';     Title='Tune one specific game';    Sub='A familiar game, a focused setup.';         Icon='M12 3a9 9 0 1 0 .1 0M12 7a5 5 0 1 0 .1 0M12 10v4m-2-2h4'
        Locked=$true; Intro=''; Links=@() }
@@ -8098,26 +8194,158 @@ function Sync-HomeTiles {
 
 # Illustrative setup score = share of the checkable gaming settings that are already on.
 # Re-uses the list Load-ActiveBadges already built, so it adds no extra system queries.
-function Update-HomeScore {
-    try {
-        $labels = @($script:BadgeTests | Where-Object {
-            $_.CheckboxName -and
-            -not ($_.CheckboxName -like 'ChkGpuNv*' -and $script:GpuVendor -ne 'nvidia') -and
-            -not ($_.CheckboxName -like 'ChkGpuAmd*' -and $script:GpuVendor -ne 'amd')
-        } | ForEach-Object { $_.Label })
-        $on = 0
-        foreach ($row in $c['PanelActiveBadges'].Children) {
-            try { if ($row.Children[0].Text -in $labels) { $on++ } } catch {}
+# One score calculation, using the status checks already completed by Load-ActiveBadges.
+# Explicit ActiveIds is also useful to callers projecting choices; it never runs a status query.
+# Only known setting IDs can be persisted. The list is bounded and never accepts objects as IDs.
+function Get-ValidUnavailableIds {
+    param($Value)
+    if (-not ($Value -is [array])) { return }
+    $seen = @{}; $checked = 0
+    foreach ($id in $Value) {
+        if (++$checked -gt 256 -or $seen.Count -ge 128) { break }
+        if ($id -isnot [string] -or $id.Length -gt 80 -or $id -notmatch '^Chk[A-Za-z0-9]+$') { continue }
+        if ($script:TweakInfo -and $script:TweakInfo.ContainsKey($id) -and $c[$id] -and -not $seen.ContainsKey($id)) {
+            $seen[$id] = $true; $id
         }
-        $total = [math]::Max($labels.Count, 1)
-        $score = [int][math]::Round(100.0 * $on / $total)
-        $c['HomeScoreNum'].Text = "$score"
-        $c['HomeScoreTitle'].Text = if ($score -ge 70) { 'Looking good' } elseif ($score -ge 35) { 'A good starting point' } else { 'Easy wins ahead' }
-        $c['HomeScoreSub'].Text = "$on of $total settings on`r`nNot a speed score"
-        $circ = 26.7   # ring circumference in stroke-thickness units (diameter 68 / 8 * pi)
-        $c['HomeRingArc'].StrokeDashArray = [System.Windows.Media.DoubleCollection]::new([double[]]@(($circ * $score / 100.0), 100))
-    } catch {}
+    }
 }
+
+function Get-ScoreLeftOutText {
+    param([int]$Count)
+    if ($Count -eq 1) { return '1 setting was left out because it is not available on this PC.' }
+    if ($Count -gt 1) { return "$Count settings were left out because they are not available on this PC." }
+    return ''
+}
+
+# A bool false is an applicable-but-off result only for these capability-aware probes.
+# Other probes prove applicability when on, but missing default registry values do not prove hardware support.
+function Test-ScoreCapabilityProbe {
+    param([string]$Id)
+    return ($Id -in @('ChkNaglesAlgo','ChkNicPowerSaving','ChkNicEeeDisable','ChkGpuAmdAntiLag'))
+}
+
+function Sync-ScoreAvailability {
+    param([switch]$DeferSave)
+    if (-not $script:SrSettings) { return }
+    $old = @(Get-ValidUnavailableIds $script:SrSettings.unavailable)
+    $new = @($old | Where-Object { $_ -notin $script:SetupScoreApplicableIds })
+    $script:SrSettings.unavailable = $new
+    if (($old -join '|') -ne ($new -join '|')) {
+        if ($DeferSave -and $window) {
+            if (-not $script:ScoreSavePending) {
+                $script:ScoreSavePending = $true
+                [void]$window.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::ApplicationIdle,[Action]{
+                    $script:ScoreSavePending = $false; Save-SrSettings
+                })
+            }
+        } else { Save-SrSettings }
+    }
+}
+
+# Called only by classified batch outcomes. A generic null, cancelled action, failed operation or Safe Mode lock is not evidence.
+function Register-SettingOutcome {
+    param([string]$Id,[string]$Reason)
+    if (-not $script:SrSettings -or -not $script:TweakInfo.ContainsKey($Id) -or -not $c[$Id]) { return }
+    $old = @(Get-ValidUnavailableIds $script:SrSettings.unavailable)
+    if ($Reason -eq 'Succeeded') {
+        $new = @($old | Where-Object { $_ -ne $Id })
+        $script:SetupScoreNotApplicableIds = @($script:SetupScoreNotApplicableIds | Where-Object { $_ -ne $Id })
+    } elseif ($Reason -in @('MissingTarget','Precondition','Protected','NotApplicable')) {
+        $new = @(Get-ValidUnavailableIds (@($old) + @($Id)))
+        # A pre-Apply probe must not immediately overrule a newer, authoritative skip.
+        $script:SetupScoreApplicableIds = @($script:SetupScoreApplicableIds | Where-Object { $_ -ne $Id })
+    } else { return }
+    $script:SrSettings.unavailable = $new
+    if (($old -join '|') -ne ($new -join '|')) { Save-SrSettings }
+}
+
+function Get-SetupScorePercent {
+    param([int]$On,[int]$Total)
+    if ($Total -le 0) { return 0 }
+    return [int][math]::Round(100.0 * [math]::Min([math]::Max($On,0),$Total) / $Total)
+}
+
+
+function Get-SetupScore {
+    param([string[]]$ActiveIds)
+    $ready = $PSBoundParameters.ContainsKey('ActiveIds') -or $script:SetupScoreReady
+    if (-not $ready) { return @{ Ready=$false; Score=0; On=0; Total=0; OnIds=@(); OffIds=@(); ExcludedCount=0 } }
+    if (-not $PSBoundParameters.ContainsKey('ActiveIds')) { $ActiveIds = @($script:SetupScoreActiveIds) }
+    $candidates = @($script:BadgeTests | Where-Object {
+        $_.CheckboxName -and $c[$_.CheckboxName] -and $script:TweakInfo.ContainsKey($_.CheckboxName) -and
+        -not ($_.CheckboxName -like 'ChkGpuNv*' -and $script:GpuVendor -ne 'nvidia') -and
+        -not ($_.CheckboxName -like 'ChkGpuAmd*' -and $script:GpuVendor -ne 'amd')
+    } | ForEach-Object { $_.CheckboxName } | Select-Object -Unique)
+    $learned = @(Get-ValidUnavailableIds $script:SrSettings.unavailable | Where-Object { $_ -notin $script:SetupScoreApplicableIds })
+    $excluded = @($candidates | Where-Object { $_ -in $script:SetupScoreNotApplicableIds -or $_ -in $learned })
+    $eligible = @($candidates | Where-Object { $_ -notin $excluded })
+    $onIds = @($eligible | Where-Object { $_ -in $ActiveIds })
+    $offIds = @($eligible | Where-Object { $_ -notin $ActiveIds })
+    return @{ Ready=$true; Score=(Get-SetupScorePercent $onIds.Count $eligible.Count); On=$onIds.Count; Total=$eligible.Count; OnIds=$onIds; OffIds=$offIds; ExcludedCount=$excluded.Count }
+}
+
+function Update-HomeScore {
+    $state = Get-SetupScore
+    foreach ($prefix in @('Home','Scan')) {
+        $button = $c[('Btn'+$prefix+'Score')]
+        if (-not $button) { continue }
+        $hasScore = ($state.Ready -and $state.Total -gt 0)
+        $c[($prefix+'ScoreNum')].Text = if ($hasScore) { [string]$state.Score } else { '-' }
+        $c[($prefix+'ScoreTitle')].Text = if (-not $state.Ready) { 'Checking...' } elseif (-not $hasScore) { 'Nothing to score on this PC' } elseif ($state.Score -ge 70) { 'Looking good' } elseif ($state.Score -ge 35) { 'A good starting point' } else { 'Easy wins ahead' }
+        $c[($prefix+'ScoreSub')].Text = if ($hasScore) { "$($state.On) of $($state.Total) settings on`r`nNot a speed score" } elseif ($state.Ready) { "No applicable settings were found.`r`nNot a speed score" } else { 'Not a speed score' }
+        $c[($prefix+'RingArc')].StrokeDashArray = [System.Windows.Media.DoubleCollection]::new([double[]]@((26.7 * $state.Score / 100.0),100))
+        $button.IsEnabled = ($hasScore -and $state.OffIds.Count -gt 0)
+        $c[($prefix+'ScoreLink')].Text = if ($hasScore -and $state.OffIds.Count -eq 0) { 'Everything we check is on' } elseif ($hasScore) { 'See what to change' } else { '' }
+        $c[($prefix+'ScoreExcluded')].Text = Get-ScoreLeftOutText $state.ExcludedCount
+        $c[($prefix+'ScoreExcluded')].Visibility = if ($state.ExcludedCount -gt 0) { 'Visible' } else { 'Collapsed' }
+        [System.Windows.Automation.AutomationProperties]::SetName($button, $(if ($hasScore) { "Setup score $($state.Score) out of 100. $($c[($prefix+'ScoreLink')].Text)" } elseif ($state.Ready) { 'Nothing to score on this PC' } else { 'Setup score: checking' }))
+    }
+}
+
+function Get-ScoreProjection {
+    param($State)
+    $safe = @($State.OffIds | Where-Object { (Get-TweakRisk $_) -eq 'S' })
+    $optional = @($State.OffIds | Where-Object { (Get-TweakRisk $_) -ne 'S' })
+    $safeState = Get-SetupScore -ActiveIds (@($State.OnIds) + $safe)
+    $allState = Get-SetupScore -ActiveIds (@($State.OnIds) + @($State.OffIds))
+    return @{ Safe=$safe; Optional=$optional; SafeScore=$safeState.Score; AllScore=$allState.Score }
+}
+
+$script:ScoreReturnPage = 'PageHome'
+function Show-RaiseScorePage {
+    $state = Get-SetupScore
+    if (-not $state.Ready -or $state.OffIds.Count -eq 0) { return }
+    $script:ScoreReturnPage = if ($script:SrPage -eq 'PageScan') { 'PageScan' } else { 'PageHome' }
+    $projection = Get-ScoreProjection $state
+    $intro = if ($projection.Safe.Count -eq 0) { "Your score is $($state.Score). No Safe items are left off." }
+        elseif ($projection.SafeScore -eq 100) { "Your score is $($state.Score). Switching on the $($projection.Safe.Count) Safe items can take it to 100." }
+        else { "Switching on the $($projection.Safe.Count) Safe items can take your score from $($state.Score) to about $($projection.SafeScore)." }
+    if ($projection.Optional.Count -gt 0) { $intro += " The $($projection.Optional.Count) optional Careful or Advanced items can take it to $($projection.AllScore). Read each one first." }
+    if ($state.ExcludedCount -gt 0) { $intro += ' ' + (Get-ScoreLeftOutText $state.ExcludedCount) }
+    $intro += ' This counts settings, not speed. Nothing changes until you press Apply.'
+    if ($script:SrSettings.safeMode -and $projection.Optional.Count -gt 0) { $intro += ' Safe Mode locks the non-Safe items.' }
+    Show-GoalPage -Key 'score' -Title 'Raise your score' -Intro $intro -Ids $projection.Safe -Links @() -Optional $projection.Optional
+    $c['BtnGoalBack'].Content = if ($script:ScoreReturnPage -eq 'PageScan') { 'Back to Your PC' } else { 'Back to Home' }
+}
+
+function Return-FromScorePage {
+    if ($script:GoalKey -eq 'score' -and $script:SrPage -eq 'PageGoal') { Show-SimplePage $script:ScoreReturnPage; Update-HomeScore }
+    else { Show-SimplePage 'PageHome' }
+}
+
+# Only compare observed status checks with the same denominator; never infer success from a checkbox tick.
+function Set-ScoreChange {
+    param($Entry,$Before,$After)
+    if ($Entry) { $Entry.Remove('ScoreBefore'); $Entry.Remove('ScoreAfter') }
+    if (-not $Entry -or -not $Before -or -not $After -or -not $Before.Ready -or -not $After.Ready) { return }
+    $afterIds = @($After.OnIds) + @($After.OffIds)
+    $common = @((@($Before.OnIds) + @($Before.OffIds)) | Where-Object { $_ -in $afterIds } | Select-Object -Unique)
+    if ($common.Count -eq 0) { return }
+    # Rebase both observations on the same applicable IDs, so learning a skip cannot manufacture a drop.
+    $Entry.ScoreBefore = Get-SetupScorePercent @($common | Where-Object { $_ -in $Before.OnIds }).Count $common.Count
+    $Entry.ScoreAfter = Get-SetupScorePercent @($common | Where-Object { $_ -in $After.OnIds }).Count $common.Count
+}
+
 
 function Enter-Home {
     $stale = (([datetime]::Now - $script:HomeLastLoad).TotalSeconds -gt 60)
@@ -8192,6 +8420,80 @@ function Add-ProLinks {
 
 
 # ---- first run ------------------------------------------------------------------------------
+function Add-ScanRow {
+    param([string]$Label, [string]$Value, [string]$Note)
+    $card = New-Object System.Windows.Controls.Border
+    $card.Background = (Br '#0d0d16'); $card.BorderBrush = (Br '#28242f'); $card.BorderThickness = [System.Windows.Thickness]::new(1)
+    $card.CornerRadius = [System.Windows.CornerRadius]::new(8); $card.Padding = [System.Windows.Thickness]::new(14,9,14,9)
+    $card.Margin = [System.Windows.Thickness]::new(0,0,0,8)
+    $sp = New-Object System.Windows.Controls.StackPanel
+    $sp.Children.Add((New-Text $Label 12 '#a78bff' 'SemiBold')) | Out-Null
+    $sp.Children.Add((New-Text $Value 14 '#edecf3' 'SemiBold')) | Out-Null
+    if ($Note) { $sp.Children.Add((New-Text $Note 12 '#8b8b9c')) | Out-Null }
+    $card.Child = $sp
+    $c['ScanList'].Children.Add($card) | Out-Null
+}
+
+function Show-ScanPage {
+    Update-HomeScore
+    $c['ScanList'].Children.Clear()
+    $laptop = Test-IsLaptop
+    Add-ScanRow 'TYPE OF PC' $(if ($laptop) { 'Laptop' } else { 'Desktop' }) $(if ($laptop) { 'A battery was found, so I will suggest gentle, cool-running settings.' } else { 'No battery was found, so this looks like a desktop.' })
+    try {
+        $cpu = Get-CachedCim Win32_Processor | Select-Object -First 1
+        $nm = ($cpu.Name -replace '\(R\)|\(TM\)|CPU|@.*', '').Trim()
+        Add-ScanRow 'PROCESSOR' "$nm" "$($cpu.NumberOfCores) cores, $($cpu.NumberOfLogicalProcessors) threads."
+    } catch { Add-ScanRow 'PROCESSOR' 'Could not read' '' }
+    $gn = if ($script:GpuName -and $script:GpuName -ne 'No discrete GPU detected') { $script:GpuName } else { 'No separate graphics card found' }
+    Add-ScanRow 'GRAPHICS' $gn $(switch ($script:GpuVendor) { 'nvidia' { 'Nvidia graphics: I can suggest matching Nvidia options.' } 'amd' { 'AMD graphics: I can suggest matching AMD options.' } default { 'Only graphics options that fit your PC are suggested.' } })
+    try {
+        $gb = [math]::Round(((Get-CachedCim Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1GB))
+        Add-ScanRow 'MEMORY' "$gb GB" $(if ($gb -ge 16) { 'Plenty for most games.' } elseif ($gb -ge 8) { 'Enough for most games.' } else { 'On the small side, so fewer background apps help.' })
+    } catch { Add-ScanRow 'MEMORY' 'Could not read' '' }
+    try {
+        $d = @(Get-PhysicalDisk -ErrorAction Stop | Select-Object -First 3 | ForEach-Object {
+            $t = if ($_.BusType -eq 'NVMe') { 'NVMe SSD' } elseif ($_.MediaType -eq 'SSD') { 'SSD' } elseif ($_.MediaType -eq 'HDD') { 'Hard drive' } else { 'Drive' }
+            "$t, $([math]::Round($_.Size / 1GB)) GB" })
+        if ($d.Count -gt 0) { Add-ScanRow 'STORAGE' ($d -join ' and ') 'Fast storage means quicker loading.' }
+    } catch {}
+    try {
+        $ds = Get-DisplayStatus
+        if ($ds.CurrentHz -gt 0) { Add-ScanRow 'SCREEN' "$($ds.CurrentHz) Hz" $(if ($ds.AtMax) { 'Already at the best refresh rate for this screen.' } else { "This screen can go up to $($ds.MaxHz) Hz. You can change it in Pro, Gaming tools." }) }
+    } catch {}
+    try {
+        $na = Get-NetworkAdapterStatus
+        Add-ScanRow 'INTERNET' $(if ($na.OnWifi) { 'WiFi' } elseif ($na.HasEthernet) { 'Cable' } else { 'Not connected' }) $(if ($na.OnWifi) { 'A cable is steadier for games, if you can use one.' } else { '' })
+    } catch {}
+    $c['ScanIntro'].Text = 'This check only reads your PC. Nothing was changed. I use it to suggest settings that fit.'
+    Show-SimplePage 'PageScan'
+}
+
+function Show-PlanPage {
+    $script:PlanIds = Get-GoalIds 'recommended'
+    $laptop = Test-IsLaptop
+    $c['PlanTitle'].Text = 'Here is what I suggest.'
+    $c['PlanIntro'].Text = if ($laptop) { "These suit your laptop. The Safe ones are switched on. Optional extras start switched off. Change anything you like, then press Get my PC ready." } else { "These suit your PC. The Safe ones are switched on. Optional extras start switched off. Change anything you like, then press Get my PC ready." }
+    $c['PlanMore'].Text = ''
+    $extras = @(Get-GoalCandidates 'recommended' | Where-Object { $_ -notin $script:PlanIds })
+    $groups = @()
+    if ($script:PlanIds.Count -gt 0) { $groups += @{ Title = 'Safe starting items'; Sub = 'Switched on for you.'; Ids = @($script:PlanIds); On = $true; Links = $false } }
+    if ($extras.Count -gt 0) { $groups += @{ Title = 'Optional Careful changes. Read the effects and recovery notes before choosing.'; Sub = 'These start switched off.'; Ids = $extras; On = $false; Links = $true } }
+    $script:PlanState = Build-ChoiceList -Panel $c['PlanList'] -Groups $groups -Ctx 'recommended'
+    $script:ActiveState = $script:PlanState
+    Show-SimplePage 'PagePlan'
+}
+
+$script:PlanIds = @(); $script:PlanState = $null
+$c['BtnScanBack'].Add_Click({ Show-SimplePage 'PageWelcome' })
+$c['BtnScanNext'].Add_Click({ Show-PlanPage })
+$c['BtnPlanSkip'].Add_Click({ Complete-Welcome; Show-SimplePage 'PageHome' })
+$c['BtnPlanGo'].Add_Click({
+    $ids = Get-ChoiceOn $script:PlanState
+    [void](Add-ChosenIds $ids)
+    Complete-Welcome; Update-Count
+    Show-SimplePage 'PageBasket'
+})
+
 function Complete-Welcome {
     $script:SrSettings.welcomeDone = $true
     Save-SrSettings
@@ -8202,7 +8504,7 @@ function Complete-Welcome {
 $c['BtnModeSimple'].Add_Click({ Set-UiMode 'simple' })
 $c['BtnModePro'].Add_Click({ Set-UiMode 'pro' })
 $c['BtnHelp'].Add_Click({ Show-SimplePage 'PageHelp' })
-$c['BtnGoalBack'].Add_Click({ Show-SimplePage 'PageHome' })
+$c['BtnGoalBack'].Add_Click({ Return-FromScorePage })
 $c['BtnScoreInfo'].Add_Click({
     $c['HomeScoreExplain'].Visibility = if ($c['HomeScoreExplain'].Visibility -eq 'Visible') { 'Collapsed' } else { 'Visible' }
 })
@@ -8210,12 +8512,14 @@ $c['BtnFixMatters'].Add_Click({
     $ids = Get-GoalIds 'recommended'
     $opt = @(Get-GoalCandidates 'recommended' | Where-Object { $_ -notin $ids })
     Write-SR "Fix what matters most opened: $(@($ids).Count) Safe item(s) and $($opt.Count) optional extra(s) listed (nothing ticked, nothing applied)" 'INFO'
-    $c['LogText'].Text = 'Look through the list, then press Add to review basket. Nothing changes until you press Apply.'
-    Show-GoalPage -Key 'recommended' -Title 'Your recommended starting set' -Intro 'These Safe items suit your PC and are switched on. Switch off anything you do not want, then press Add to review basket.' -Ids $ids -Links @() -Recommended (Test-IsLaptop) -Optional $opt
+    $c['LogText'].Text = 'Look through the list, then press Add to review list. Nothing changes until you press Apply.'
+    Show-GoalPage -Key 'recommended' -Title 'Your recommended starting set' -Intro 'These Safe items suit your PC and are switched on. Switch off anything you do not want, then press Add to review list.' -Ids $ids -Links @() -Recommended (Test-IsLaptop) -Optional $opt
 })
-$c['BtnWelcomeStart'].Add_Click({ Complete-Welcome; Set-UiMode 'simple' })
+$c['BtnWelcomeStart'].Add_Click({ Show-ScanPage })
 $c['BtnListAdd'].Add_Click({ Invoke-ListAdd })
-$c['BtnListBack'].Add_Click({ Show-SimplePage 'PageHome' })
+$c['BtnListBack'].Add_Click({ Return-FromScorePage })
+$c['BtnHomeScore'].Add_Click({ Show-RaiseScorePage })
+$c['BtnScanScore'].Add_Click({ Show-RaiseScorePage })
 $c['BtnPresetBack'].Add_Click({ Show-SimplePage 'PageHome' })
 $c['ChkPresetAck'].Add_Checked({ Update-ChoiceCount $script:ActiveState })
 $c['ChkPresetAck'].Add_Unchecked({ Update-ChoiceCount $script:ActiveState })
@@ -8230,6 +8534,7 @@ $c['TxtSearch'].Add_TextChanged({
 # Called once from the deferred start-up block, after the existing data loads have finished.
 function Initialize-ShellUi {
     $script:SrSettings = Read-SrSettings
+    Sync-ScoreAvailability -DeferSave
     $script:HomeLastLoad = [datetime]::Now
     Build-HomeGoals
     Initialize-Stage2
@@ -8256,10 +8561,14 @@ function Initialize-ShellUi {
 
 # ---- settings (extends the stage 1 file: safeMode, largeText, remind) ----------------------------
 function Read-SrSettings {
-    $d = @{ welcomeDone = $false; mode = 'simple'; safeMode = $false; largeText = $false }
+    $d = @{ welcomeDone = $false; mode = 'simple'; safeMode = $false; largeText = $false; unavailable = @() }
     try {
         if (Test-Path $script:SrSettingsPath) {
-            $j = Get-Content $script:SrSettingsPath -Raw -EA Stop | ConvertFrom-Json
+            $raw = Get-Content $script:SrSettingsPath -Raw -EA Stop
+            if ($raw.Length -gt 65536) { return $d }
+            $j = $raw | ConvertFrom-Json -EA Stop
+            if ($j -isnot [pscustomobject]) { return $d }
+            $d.unavailable = @(Get-ValidUnavailableIds $j.unavailable)
             foreach ($k in @('welcomeDone','safeMode','largeText')) { if ($null -ne $j.$k) { $d[$k] = [bool]$j.$k } }
             if ($j.mode -eq 'pro') { $d.mode = 'pro' }
         }
@@ -8279,10 +8588,11 @@ function Save-SrSettings {
             }
         } catch {}
         $out['welcomeDone'] = [bool]$s.welcomeDone; $out['mode'] = [string]$s.mode; $out['safeMode'] = [bool]$s.safeMode; $out['largeText'] = [bool]$s.largeText
+        $out['unavailable'] = @(Get-ValidUnavailableIds $s.unavailable)
         $out | ConvertTo-Json | Set-Content -LiteralPath $script:SrSettingsPath -Encoding UTF8
     } catch { Write-SR "Could not save settings: $($_.Exception.Message)" 'WARN' }
 }
-$script:SrSettings = @{ welcomeDone = $false; mode = 'simple'; safeMode = $false; largeText = $false }
+$script:SrSettings = @{ welcomeDone = $false; mode = 'simple'; safeMode = $false; largeText = $false; unavailable = @() }
 
 # ---- risk helpers ----------------------------------------------------------------------------------
 function Get-SelectedNames { return @($tweakBoxes | Where-Object { $c[$_] -and $c[$_].IsChecked }) }
@@ -8325,7 +8635,7 @@ function Test-SafeModeGuard {
 foreach ($n in $tweakBoxes) { if ($c[$n]) { $c[$n].Add_Checked({ param($s, $e) Test-SafeModeGuard $s }) } }
 
 # ---- navigation (replaces the stage 1 versions) ------------------------------------------------------
-$script:SrPages = @('PageWelcome','PageHome','PageGoal','PagePreset','PageProArea','PageSearch','PageHelp','PageBasket','PageApplying','PageResult','PageHistory','PageMyPc','PageSettings','PageTable','PagePaid')
+$script:SrPages = @('PageScan','PagePlan','PageWelcome','PageHome','PageGoal','PagePreset','PageProArea','PageSearch','PageHelp','PageBasket','PageApplying','PageResult','PageHistory','PageMyPc','PageSettings','PageTable','PagePaid')
 $script:SrPageNav = @{ PageHome = 'BtnNavHome'; PageGoal = 'BtnNavHome'; PagePreset = 'BtnNavHome'; PageMyPc = 'BtnNavMyPc'; PageHistory = 'BtnNavHistory'; PageResult = 'BtnNavHistory'; PageApplying = 'BtnNavHistory'; PageSettings = 'BtnNavSettings' }
 function Set-NavActive {
     param([string]$Active)
@@ -8340,18 +8650,20 @@ function Show-SimplePage {
     $c['ProHost'].Visibility    = 'Collapsed'
     $c['SimpleHost'].Visibility = 'Visible'
     # Home, goal, preset and welcome pages only exist in Simple: showing one of them always puts the mode back to Simple
-    if ($Name -in @('PageWelcome','PageHome','PageGoal','PagePreset') -and $script:SrMode -ne 'simple') { $script:SrMode = 'simple'; $script:SrSettings.mode = 'simple' }
+    if ($Name -in @('PageScan','PagePlan','PageWelcome','PageHome','PageGoal','PagePreset') -and $script:SrMode -ne 'simple') { $script:SrMode = 'simple'; $script:SrSettings.mode = 'simple' }
     Set-ModeButtons
     foreach ($p in $script:SrPages) { $c[$p].Visibility = if ($p -eq $Name) { 'Visible' } else { 'Collapsed' } }
     $script:SrPage = $Name
     try { $c['SimpleScroll'].ScrollToTop() } catch {}
-    $c['ActionBar'].Visibility = if ($Name -in @('PageWelcome','PageGoal','PagePreset')) { 'Visible' } else { 'Collapsed' }
+    $c['ActionBar'].Visibility = if ($Name -in @('PageScan','PagePlan','PageWelcome','PageGoal','PagePreset')) { 'Visible' } else { 'Collapsed' }
     $c['BarList'].Visibility    = if ($Name -in @('PageGoal','PagePreset')) { 'Visible' } else { 'Collapsed' }
     $c['BarWelcome'].Visibility = if ($Name -eq 'PageWelcome') { 'Visible' } else { 'Collapsed' }
+    $c['BarScan'].Visibility = if ($Name -eq 'PageScan') { 'Visible' } else { 'Collapsed' }
+    $c['BarPlan'].Visibility = if ($Name -eq 'PagePlan') { 'Visible' } else { 'Collapsed' }
     Set-NavActive $(if ($script:SrPageNav.ContainsKey($Name)) { $script:SrPageNav[$Name] } else { '' })
-    $showProNav = ($script:SrMode -eq 'pro' -and $Name -ne 'PageWelcome')
+    $showProNav = ($script:SrMode -eq 'pro' -and $Name -notin @('PageWelcome','PageScan','PagePlan'))
     $c['ProNav'].Visibility = if ($showProNav) { 'Visible' } else { 'Collapsed' }
-    $c['NavRow'].Visibility = if ($showProNav -or $Name -eq 'PageWelcome') { 'Collapsed' } else { 'Visible' }
+    $c['NavRow'].Visibility = if ($showProNav -or $Name -in @('PageWelcome','PageScan','PagePlan')) { 'Collapsed' } else { 'Visible' }
     if ($script:ProBuilt) {
         $pk = switch ($Name) { 'PageTable' { 'everything' } 'PageProArea' { $script:ProAreaKey } 'PageMyPc' { 'mypc' } 'PageHistory' { 'history' } 'PageResult' { 'history' } 'PageApplying' { 'history' } 'PageSettings' { 'settings' } default { '' } }
         Set-ProNavActive $pk
@@ -8428,6 +8740,7 @@ function Get-ItemReason {
         'privacy'   { return 'Limits what Windows collects or shows.' }
         'stream'    { return 'Helps your game and your stream share the PC.' }
         'game'      { return 'Helps one game run its best.' }
+        'score'     { return 'This setting is counted in your setup score and its last check was off.' }
         'preset:*'  {
             $p = $Ctx.Substring(7)
             switch ($p) {
@@ -8566,7 +8879,7 @@ function Update-ChoiceCount {
     if (-not $State) { return }
     $on = Get-ChoiceOn $State
     $r = Get-RiskCounts $on
-    $State.Count.Text = if ($State.ShowAdvanced) { "Switched on here: $($r.S) Safe, $($r.C) Careful, $($r.A) Advanced. These are local choices. Some may already be in your basket." } else { "Switched on here: $($r.S) Safe, $($r.C) Careful. These are local choices. Some may already be in your basket." }
+    $State.Count.Text = if ($State.ShowAdvanced) { "Switched on here: $($r.S) Safe, $($r.C) Careful, $($r.A) Advanced. These are local choices. Some may already be in your review list." } else { "Switched on here: $($r.S) Safe, $($r.C) Careful. These are local choices. Some may already be in your review list." }
     if ($State.Button -and $c[$State.Button]) {
         $n = $on.Count
         if ($State.ButtonFormat) { $c[$State.Button].Content = ($State.ButtonFormat -f $n) }
@@ -8593,6 +8906,7 @@ function Add-ChosenIds {
 
 function Show-GoalPage {
     param([string]$Key, [string]$Title, [string]$Intro, [string[]]$Ids, $Links, [bool]$Recommended = $false, [string[]]$Optional = @())
+    $c['BtnGoalBack'].Content = 'Back to Home'
     $c['GoalTitle'].Text = $Title
     $c['GoalIntro'].Text = $Intro
     $c['GoalRecBadge'].Visibility = if ($Recommended) { 'Visible' } else { 'Collapsed' }
@@ -8600,13 +8914,13 @@ function Show-GoalPage {
     $c['GoalOptional'].Children.Clear()
     $c['GoalOptTitle'].Visibility = 'Collapsed'
     $c['GoalLinks'].Children.Clear()
-    $ctx = switch ($Key) { 'play' { 'play' } 'stream' { 'stream' } 'internet' { 'internet' } 'clean' { 'clean' } 'privacy' { 'privacy' } 'game' { 'game' } default { 'recommended' } }
+    $ctx = switch ($Key) { 'play' { 'play' } 'stream' { 'stream' } 'internet' { 'internet' } 'clean' { 'clean' } 'privacy' { 'privacy' } 'game' { 'game' } 'score' { 'score' } default { 'recommended' } }
     $groups = @()
     if (@($Ids).Count -gt 0) { $groups += @{ Title = 'Safe starting items'; Sub = 'Switched on for you. Switch off anything you do not want.'; Ids = @($Ids); On = $true; Links = $false } }
     else { $t = New-Text 'No Safe items are suggested for this goal, so nothing is switched on for you.' 13 '#8b8b9c'; $t.Margin = [System.Windows.Thickness]::new(0,0,0,12); $c['GoalItems'].Children.Add($t) | Out-Null }
     $opt = @($Optional | Where-Object { $_ })
-    if ($opt.Count -gt 0) { $groups += @{ Title = 'Optional Careful changes. Read the effects and recovery notes before choosing.'; Sub = 'These start switched off. Switch on only what you want.'; Ids = $opt; On = $false; Links = $true } }
-    $script:ActiveState = Build-ChoiceList -Panel $c['GoalItems'] -Groups $groups -Ctx $ctx -Button 'BtnListAdd' -ButtonFormat 'Add to review basket ({0})'
+    if ($opt.Count -gt 0) { $groups += @{ Title = $(if ($Key -eq 'score') { 'Optional Careful or Advanced changes. Read each item first.' } else { 'Optional Careful changes. Read the effects and recovery notes before choosing.' }); Sub = 'These start switched off. Switch on only what you want.'; Ids = $opt; On = $false; Links = $true } }
+    $script:ActiveState = Build-ChoiceList -Panel $c['GoalItems'] -Groups $groups -Ctx $ctx -Button 'BtnListAdd' -ButtonFormat 'Add to review list ({0})'
     $c['BtnListAdd'].Visibility = if ($script:ActiveState.Boxes.Count -gt 0) { 'Visible' } else { 'Collapsed' }
     $script:GoalKey = $Key
     Add-ProLinks $c['GoalLinks'] $Links
@@ -8621,7 +8935,7 @@ function Invoke-Goal {
     $ids = Get-GoalIds $Key
     $opt = @(Get-GoalCandidates $Key | Where-Object { $_ -notin $ids })
     Write-SR "Goal '$($g.Title)' opened: $(@($ids).Count) Safe item(s) and $($opt.Count) optional extra(s) listed (nothing ticked, nothing applied)" 'INFO'
-    $c['LogText'].Text = "Look through the list, then press Add to review basket. Nothing changes until you press Apply."
+    $c['LogText'].Text = "Look through the list, then press Add to review list. Nothing changes until you press Apply."
     $rec = $false
     Show-GoalPage -Key $Key -Title $g.Title -Intro $g.Intro -Ids $ids -Links $g.Links -Recommended $rec -Optional $opt
 }
@@ -8675,7 +8989,7 @@ function Show-PresetPage {
     $ids = Get-PresetIds $Key
     $c['PresetTitle'].Text = "$($p.Title) preset"
     $laptop = Test-IsLaptop
-    $c['PresetIntro'].Text = "$($p.Promise) This is a preview. Nothing is switched on in your review basket until you press Add to review basket."
+    $c['PresetIntro'].Text = "$($p.Promise) This is a preview. Nothing is switched on in your review list until you press Add to review list."
     if ($script:SrSettings.safeMode) { $c['PresetIntro'].Text += ' Safe Mode is on, so only the Safe items are switched on. The rest are greyed and cannot be switched on.' }
     $c['PresetWarn'].Visibility = 'Collapsed'
     $c['PresetWarnText'].Text = ''
@@ -8686,7 +9000,7 @@ function Show-PresetPage {
     if ($s.Count -gt 0)  { $groups += @{ Title = 'Safe items'; Sub = ''; Ids = $s; On = $true; Links = $false } }
     if ($cc.Count -gt 0) { $groups += @{ Title = 'Careful items'; Sub = $(if ($safe) { 'Safe Mode is on, so these stay off and cannot be switched on.' } else { 'Read each trade-off. Some changes need manual recovery.' }); Ids = $cc; On = $true; Links = $false } }
     if ($a.Count -gt 0)  { $groups += @{ Title = 'Advanced items (experts only)'; Sub = $(if ($safe) { 'Safe Mode is on, so these stay off and cannot be switched on.' } else { 'Bigger changes. Read each one before you keep it switched on.' }); Ids = $a; On = $true; Links = $false } }
-    $script:ActiveState = Build-ChoiceList -Panel $c['PresetList'] -Groups $groups -Ctx "preset:$Key" -Button 'BtnListAdd' -ButtonFormat 'Add to review basket ({0})'
+    $script:ActiveState = Build-ChoiceList -Panel $c['PresetList'] -Groups $groups -Ctx "preset:$Key" -Button 'BtnListAdd' -ButtonFormat 'Add to review list ({0})'
     $c['BtnListAdd'].Visibility = 'Visible'
     Write-SR "Preset preview '$($p.Title)': $($ids.Count) item(s) listed (nothing ticked, nothing applied)" 'INFO'
     Show-SimplePage 'PagePreset'
@@ -8706,13 +9020,13 @@ function Invoke-ListAdd {
     $ids = Get-ChoiceOn $st
     if ($script:SrPage -eq 'PagePreset') {
         $new = Add-ChosenIds $ids -AllowAdvanced
-        Write-SR "Preset '$($script:PresetKey)': $($ids.Count) item(s) switched on, $new newly ticked in the review basket (nothing applied)" 'INFO'
+        Write-SR "Preset '$($script:PresetKey)': $($ids.Count) item(s) switched on, $new newly ticked in the review list (nothing applied)" 'INFO'
     } else {
-        $new = Add-ChosenIds $ids
-        Write-SR "Goal '$($script:GoalKey)': $($ids.Count) item(s) switched on, $new newly ticked in the review basket (nothing applied)" 'INFO'
+        $new = Add-ChosenIds $ids -AllowAdvanced:($script:GoalKey -eq 'score')
+        Write-SR "Goal '$($script:GoalKey)': $($ids.Count) item(s) switched on, $new newly ticked in the review list (nothing applied)" 'INFO'
     }
     Update-Count
-    $c['LogText'].Text = "$new newly added, $($ids.Count - $new) already in your basket. Basket now: $(@(Get-SelectedNames).Count). Nothing changes until you press Apply."
+    $c['LogText'].Text = "$new newly added, $($ids.Count - $new) already in your review list. Review list now: $(@(Get-SelectedNames).Count). Nothing changes until you press Apply."
     Show-SimplePage 'PageBasket'
 }
 
@@ -8808,6 +9122,9 @@ function Complete-Batch {
     } else { $skipped = @($Selected) }
     $entry = @{ Time = [datetime]::Now; Names = @($Selected); Done = $done; Failed = $failed; Skipped = $skipped; Batch = $batch; Undone = @{}; Fake = $Fake; Aborted = ((-not $Res) -and (-not $Fake)); RestoreOk = $script:LastRestorePointOk; Partial = $script:PartialNotes; SaveWarn = $script:UndoSaveFailed }
     if ($done.Count -gt 0 -or $failed.Count -gt 0 -or $entry.Aborted) { $script:SrHistory.Add($entry) }
+    if (-not $Fake) { Load-ActiveBadges }
+    Set-ScoreChange $entry $script:ScoreBeforeBatch (Get-SetupScore)
+    $script:ScoreBeforeBatch = $null
     $script:CurrentEntry = $entry
     Show-SimplePage 'PageResult'
     Refresh-ResultPage
@@ -8850,6 +9167,7 @@ function Undo-BatchItem {
     }
     $Entry.Batch.Remove($Name)
     $Entry.Undone[$Name] = $true
+    if (-not $Entry.Fake) { $scoreBeforeUndo = Get-SetupScore; Load-ActiveBadges; Set-ScoreChange $Entry $scoreBeforeUndo (Get-SetupScore) }
     if (-not $Entry.Fake) { Remove-AppliedTweakState -Names @($Name) }
     Update-UndoButton
     Done "Undone: $(Get-PlainName $Name)."
@@ -8872,6 +9190,9 @@ function Undo-WholeBatch {
 function Refresh-ResultPage {
     $e = $script:CurrentEntry
     if (-not $e) { return }
+    $c['ResultScoreChange'].Text = if ($e.ContainsKey('ScoreBefore') -and $e.ScoreBefore -ne $e.ScoreAfter) { "Setup score: $($e.ScoreBefore) to $($e.ScoreAfter)" } else { '' }
+    $c['ResultScoreChange'].Visibility = if ($c['ResultScoreChange'].Text) { 'Visible' } else { 'Collapsed' }
+
     $c['ResultItems'].Children.Clear()
     if ($e.Batch -and -not $e.Fake) { foreach ($k in @($e.Done)) { if (-not $e.Batch.Contains($k) -and -not $e.Undone.ContainsKey($k)) { $e.Undone[$k] = $true } } }
     $nDone = $e.Done.Count; $nSkip = $e.Skipped.Count; $nFail = $e.Failed.Count
@@ -9257,14 +9578,11 @@ function Show-AboutWindow {
     $p1 = New-Text 'MIT Licensed - free and open source.' 14 '#edecf3'; $p1.Margin = [System.Windows.Thickness]::new(0,18,0,10); $root.Children.Add($p1) | Out-Null
     $p2 = New-Text 'It changes Windows settings (registry values, services and Windows features). StreamReady tries to make a System Restore point before a batch of settings (it can fail). Each setting saves its original first, so Undo Last Batch or History can put it back, also after a restart. Tools that act immediately have their own recorded originals where possible. Some things cannot be put back automatically (deleted files, external repairs); the app says so first.' 13 '#c9c7d6'
     $p2.Margin = [System.Windows.Thickness]::new(0,0,0,10); $root.Children.Add($p2) | Out-Null
-    $p3 = New-Text 'Simple view: pick a goal, review your basket, apply. Pro view: every setting in its own area. Safe Mode locks everything except Safe settings, and History and Undo lists each batch with an Undo for each setting that has a saved original.' 13 '#c9c7d6'
+    $p3 = New-Text 'Simple view: pick a goal, review your list, apply. Pro view: every setting in its own area. Safe Mode locks everything except Safe settings, and History and Undo lists each batch with an Undo for each setting that has a saved original.' 13 '#c9c7d6'
     $p3.Margin = [System.Windows.Thickness]::new(0,0,0,10); $root.Children.Add($p3) | Out-Null
     $p4 = New-Object System.Windows.Controls.TextBox
     $p4.Text = 'https://github.com/StreamReadyDev/streamready-oss'; $p4.IsReadOnly = $true; $p4.Background = (Br '#12121d'); $p4.BorderBrush = (Br '#28242f'); $p4.Foreground = (Br '#a78bff'); $p4.FontSize = 13; $p4.Padding = [System.Windows.Thickness]::new(8,6,8,6)
     $root.Children.Add($p4) | Out-Null
-    $p5 = New-Object System.Windows.Controls.TextBox
-    $p5.Text = 'Paid version: https://streamready.gumroad.com/l/kwkre'; $p5.IsReadOnly = $true; $p5.Background = (Br '#12121d'); $p5.BorderBrush = (Br '#28242f'); $p5.Foreground = (Br '#a78bff'); $p5.FontSize = 13; $p5.Padding = [System.Windows.Thickness]::new(8,6,8,6); $p5.Margin = [System.Windows.Thickness]::new(0,8,0,0)
-    $root.Children.Add($p5) | Out-Null
     $row = New-Object System.Windows.Controls.StackPanel; $row.Orientation = 'Horizontal'; $row.Margin = [System.Windows.Thickness]::new(0,22,0,0)
     $ok = New-Object System.Windows.Controls.Button
     $ok.Style = $window.FindResource('BtnPrimary'); $ok.Content = 'Close'; $ok.Height = 38; $ok.Width = 110; $ok.Margin = [System.Windows.Thickness]::new(0,0,10,0)
@@ -9466,7 +9784,7 @@ $script:ProCaps = @{
     BtnPresetGaming = @{ T = 'Gaming preset'; D = 'Replaces your ticks with the Gaming preset list. Nothing is applied until you press Apply.'; I = $false; R = 'S' }
     BtnPresetStreaming = @{ T = 'Streaming preset'; D = 'Replaces your ticks with the Streaming list. Nothing is applied until you press Apply.'; I = $false; R = 'S' }
     BtnSelectAll = @{ T = 'Select all settings'; D = 'Ticks every setting that fits your PC, on every page. In Safe Mode only Safe settings are ticked.'; I = $false; R = 'C' }
-    BtnDeselectAll = @{ T = 'Clear all ticks'; D = 'Unticks every setting in your review basket.'; I = $false; R = 'S' }
+    BtnDeselectAll = @{ T = 'Clear all ticks'; D = 'Unticks every setting in your review list.'; I = $false; R = 'S' }
     BtnSaveProfile = @{ T = 'Save my ticks to a file'; D = 'Saves the settings you have ticked, so you can load the same list later.'; I = $false; R = 'S' }
     BtnLoadProfile = @{ T = 'Load ticks from a file'; D = 'Replaces your ticks with the ones stored in a saved file. Nothing is applied until you press Apply.'; I = $false; R = 'S' }
     BtnWifiGamingMode = @{ T = 'Turn On WiFi Gaming Mode'; D = 'Changes supported WiFi settings to reduce scanning interruptions. Ping may still vary.'; I = $true; R = 'S' }
@@ -9883,7 +10201,7 @@ function Initialize-ProAreasCore {
             $strip.CornerRadius = [System.Windows.CornerRadius]::new(8); $strip.Padding = [System.Windows.Thickness]::new(14,10,14,10); $strip.Margin = [System.Windows.Thickness]::new(0,0,0,14)
             $dp = New-Object System.Windows.Controls.DockPanel
             $sb = New-Object System.Windows.Controls.Button; $sb.Style = $window.FindResource('BtnPrimary'); $sb.Height = 34; $sb.Padding = [System.Windows.Thickness]::new(16,0,16,0)
-            $sb.Content = 'Add to review basket'; $sb.Tag = $a.Key; $sb.Margin = [System.Windows.Thickness]::new(14,0,0,0)
+            $sb.Content = 'Add to review list'; $sb.Tag = $a.Key; $sb.Margin = [System.Windows.Thickness]::new(14,0,0,0)
             [System.Windows.Controls.DockPanel]::SetDock($sb, 'Right')
             $sb.Add_Click({ param($s, $e) Add-ProStripItems ([string]$s.Tag) })
             $st = New-Text '' 13 '#c9c7d6'
@@ -9978,8 +10296,8 @@ function Add-ProStripItems {
     $ids = Get-ProStripIds $Key
     $n = Add-ChosenIds $ids
     Update-Count
-    $c['LogText'].Text = "$n newly added, $($ids.Count - $n) already in your basket. Basket now: $(@(Get-SelectedNames).Count). Nothing changes until you press Apply."
-    Write-SR "Area '$Key': $($ids.Count) recommended Safe item(s) added to the review basket, $n newly ticked (nothing applied)" 'INFO'
+    $c['LogText'].Text = "$n newly added, $($ids.Count - $n) already in your review list. Review list now: $(@(Get-SelectedNames).Count). Nothing changes until you press Apply."
+    Write-SR "Area '$Key': $($ids.Count) recommended Safe item(s) added to the review list, $n newly ticked (nothing applied)" 'INFO'
     Update-ProStrip $Key
 }
 function Update-ProStrip {
@@ -9991,7 +10309,7 @@ function Update-ProStrip {
     if ($ids.Count -gt 0) {
         $pending = @($ids | Where-Object { $c[$_] -and -not $c[$_].IsChecked }).Count
         $s.Strip.Visibility = 'Visible'
-        $s.Text.Text = "Recommended for your ${kind}: $($ids.Count) Safe setting$(if($ids.Count -ne 1){'s'}) in this area. $(if ($pending -eq 0) { 'They are already in your review basket.' } else { 'Nothing is added until you press the button.' })"
+        $s.Text.Text = "Recommended for your ${kind}: $($ids.Count) Safe setting$(if($ids.Count -ne 1){'s'}) in this area. $(if ($pending -eq 0) { 'They are already in your review list.' } else { 'Nothing is added until you press the button.' })"
         $s.Button.IsEnabled = ($pending -gt 0)
     } else { $s.Strip.Visibility = 'Collapsed' }
 }
@@ -10066,7 +10384,7 @@ function Get-PaletteItems {
         @('My PC', 'Page', { Show-SimplePage 'PageMyPc' }),
         @('History and Undo', 'Page', { Show-SimplePage 'PageHistory' }),
         @('Settings', 'Page', { Show-SimplePage 'PageSettings' }),
-        @('Review basket', 'Page', { Show-SimplePage 'PageBasket' }),
+        @('Review list', 'Page', { Show-SimplePage 'PageBasket' }),
         @('Undo last batch', 'Action', { if ($c['BtnUndoLast'].IsEnabled) { $c['BtnUndoLast'].RaiseEvent([System.Windows.RoutedEventArgs]::new([System.Windows.Controls.Button]::ClickEvent)) } else { $c['LogText'].Text = 'Nothing to undo yet.' } }),
         @('Help', 'Page', { Show-SimplePage 'PageHelp' }),
         @('Jargon Buster', 'Plain-English glossary', { Show-JargonBuster }),
@@ -10108,7 +10426,7 @@ function Show-SearchResults {
     $toolHits = @($script:ProIndex | Where-Object { (Test-ProCardAvailable $_.Card) -and ($_.Title.ToLowerInvariant().Contains($q) -or $_.Desc.ToLowerInvariant().Contains($q) -or $_.Orig.ToLowerInvariant().Contains($q) -or $_.Name.ToLowerInvariant().Contains($q)) } | Select-Object -First 15)
     $c['SearchTitle'].Text = "Results for '$Query'"
     $total = $hits.Count + $areaHits.Count + $toolHits.Count
-    $c['SearchSub'].Text = if ($total -eq 0) { 'Nothing matched. Try a shorter word, for example mouse, battery or network. You can also press Ctrl+K to search pages and actions.' } elseif ($hits.Count -eq 0) { 'No settings matched, but some tools and areas did. Click one to open it.' } else { "$($hits.Count) setting$(if($hits.Count -ne 1){'s'}), $($areaHits.Count) area$(if($areaHits.Count -ne 1){'s'}) and $($toolHits.Count) tool$(if($toolHits.Count -ne 1){'s'}) found. Switch on the settings you want, then open your review basket." }
+    $c['SearchSub'].Text = if ($total -eq 0) { 'Nothing matched. Try a shorter word, for example mouse, battery or network. You can also press Ctrl+K to search pages and actions.' } elseif ($hits.Count -eq 0) { 'No settings matched, but some tools and areas did. Click one to open it.' } else { "$($hits.Count) setting$(if($hits.Count -ne 1){'s'}), $($areaHits.Count) area$(if($areaHits.Count -ne 1){'s'}) and $($toolHits.Count) tool$(if($toolHits.Count -ne 1){'s'}) found. Switch on the settings you want, then open your review list." }
     $c['SearchItems'].Children.Clear()
     if ($areaHits.Count + $toolHits.Count -gt 0) {
         $hd = New-Text 'Pro areas and tools' 15 '#edecf3' 'SemiBold'; $hd.Margin = [System.Windows.Thickness]::new(2,0,0,6); $c['SearchItems'].Children.Add($hd) | Out-Null
@@ -10734,7 +11052,7 @@ function Update-BottomBarState {
     if ($page -in @('PageBasket','PageApplying')) { $show = $false }
     elseif ($page -in @('PageResult','PageHistory','PageMyPc','PageSettings') -and $n -eq 0) { $show = $false }
     $c['BtnOpenBasket'].Visibility = if ($show) { 'Visible' } else { 'Collapsed' }
-    $c['BtnOpenBasket'].Content = if ($page -in @('PageResult','PageHistory','PageMyPc','PageSettings')) { "Back to basket ($n)" } elseif ($n -gt 0) { "Review and apply ($n)" } else { 'Review and apply' }
+    $c['BtnOpenBasket'].Content = if ($page -in @('PageResult','PageHistory','PageMyPc','PageSettings')) { "Back to review list ($n)" } elseif ($n -gt 0) { "Review and apply ($n)" } else { 'Review and apply' }
 }
 function Get-HistorySubtitle {
     param($E)
@@ -19974,10 +20292,11 @@ function Invoke-TweakBatch {
         $label = if ($c[$name]) { $c[$name].Content } else { $name }
         Working ([int]($i / $total * 95)) "Applying: $label..."
         Write-SR "[$i/$total] $label" 'APPLY'
-        $rec = $null; $reused = $false
+        $rec = $null; $reused = $false; $script:ScoreSkipReason = $null
         try {
             if (-not $dispatch.ContainsKey($name) -or -not $dispatch[$name]) {
                 $skipCount++; $skipped.Add($label)
+                Register-SettingOutcome $name 'NotApplicable'
                 Write-SR "$label skipped - not applicable to this PC" 'WARN'
                 if ($c[$name]) { try { $c[$name].IsChecked = $false } catch {} }
                 continue
@@ -19985,6 +20304,7 @@ function Invoke-TweakBatch {
             $b = Undo-Engine-Begin -Id $name -Kind 'tweak' -BatchId $batchId
             if ($b.notApplicable) {
                 $skipCount++; $skipped.Add($label)
+                Register-SettingOutcome $name 'MissingTarget'
                 Write-SR "$label skipped - nothing matching was found on this PC to change" 'WARN'
                 if ($c[$name]) { try { $c[$name].IsChecked = $false } catch {} }
                 continue
@@ -20000,6 +20320,8 @@ function Invoke-TweakBatch {
             $script:UndoFrozenNow = Undo-Engine-FrozenPlan $name      # Apply may only touch the adapters that were captured
             $script:UndoCurrentId = $name
             try { $undo = & $dispatch[$name] } finally { $script:UndoFrozenNow = $null; $script:UndoCurrentId = $null }
+            if ($undo) { Register-SettingOutcome $name 'Succeeded' }
+            elseif ($script:ScoreSkipReason) { Register-SettingOutcome $name $script:ScoreSkipReason }
             if ($b.none) {
                 # a spec that declares no items (reviewed "nothing to record"): keep the built-in undo
                 if ($undo -and $name -eq 'ChkGpuNvNpiProfile') { $undo = New-ManualRecoveryUndo $undo }
@@ -20085,6 +20407,7 @@ function Invoke-UndoRecordRestore {
 }
 function Undo-PersistedTweak {
     param([string]$Name)
+    $script:HomeLastLoad = [datetime]::MinValue
     try {
         if (-not $script:UndoEngineReady) { Initialize-UndoEngine }
         $recs = @(Undo-Engine-List -TweakId $Name)

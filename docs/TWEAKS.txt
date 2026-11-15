@@ -4,7 +4,7 @@ Every tweak StreamReady can apply: what it actually changes, how risky it is, an
 
 - **Low**: safe for almost anyone, easily reversible, no real downside.
 - **Medium**: reversible and generally safe, but has a real tradeoff (needs a reboot, affects a specific feature you might rely on, etc.) worth understanding before applying.
-- **High**: a genuine security or stability tradeoff. Never ticked by a goal. The Gaming and Streaming presets list one Advanced item (Keep core Windows in memory), which starts switched on in the preview and still needs the "I understand" tick in the review basket; the other High items are in no preset, and you have to find and select them deliberately. (The "Select all" button on the Pro > Everything page is the exception: it ticks every setting that fits your PC, including these, unless Safe Mode is on, so review the list before you Apply.)
+- **High**: a genuine security or stability tradeoff. Never ticked by a goal. The Gaming and Streaming presets list one Advanced item (Keep core Windows in memory), which starts switched on in the preview and still needs the "I understand" tick in the review list; the other High items are in no preset, and you have to find and select them deliberately. (The "Select all" button on the Pro > Everything page is the exception: it ticks every setting that fits your PC, including these, unless Safe Mode is on, so review the list before you Apply.)
 
 All tweaks below save your PC's actual prior setting before changing anything. How exactly each one can be put back (Exact, Partly, Manual or Cannot be undone) is listed in "What Undo covers and what it cannot" near the end of this file.
 
@@ -32,7 +32,7 @@ The new interface shows a badge on every setting. It is separate from the Low / 
 
 - **Safe** (13 settings): registry-only, Undo restores your exact original state (including "this value did not exist"), no service, driver or security loss, and the visible effect is small. Goals tick only these. They are: Game Mode; Faster windowed games; Variable refresh rate; Fullscreen tweak (disable fullscreen optimizations); Turn off Game Bar recording; Advertising ID off; Activity history off; PowerShell 7 telemetry opt-out; Block suggested apps; Stop update sharing (two settings); Stop cross-device sync; No surprise restarts after updates.
 - **Careful**: reversible, but it changes how Windows looks or behaves in a way you would notice, or touches services, drivers, power or USB. Never ticked for you; you can add related ones with one optional button.
-- **Advanced**: can affect stability or security. Needs an extra "I understand" tick in the review basket.
+- **Advanced**: can affect stability or security. Needs an extra "I understand" tick in the review list.
 
 Undo: before changing anything, the app saves the original state of what it is about to change (for registry tweaks: whether each key and value existed and what it held) in the protected folder `C:\ProgramData\StreamReady-OSS\undo`, and Undo restores exactly that, also after you close the app or restart Windows. Other kinds of settings (services, power plans, adapters, Windows features, scheduled tasks, files) use the same engine with their own saved originals. What it covers and what it cannot is listed in **What Undo covers and what it cannot** near the end of this file.
 
@@ -179,7 +179,7 @@ Forces Windows' global timer resolution to 0.5ms for lower input latency, via a 
 
 ## Standalone action buttons
 
-Most of these are tools marked "Applies immediately" in the app. They do not use the review basket: they act the moment you click them, and the Safe Mode lock disables the ones that are not Safe. You find them in the Pro areas System and storage, Internet and network, and Updates and apps.
+Most of these are tools marked "Applies immediately" in the app. They do not use the review list: they act the moment you click them, and the Safe Mode lock disables the ones that are not Safe. You find them in the Pro areas System and storage, Internet and network, and Updates and apps.
 
 | Button | What it does | Risk |
 |---|---|---|

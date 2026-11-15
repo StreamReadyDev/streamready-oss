@@ -36,7 +36,7 @@ body:
     id: tweaks
     attributes:
       label: Tweaks applied at the time
-      description: From the review basket, the What changed page, History and Undo, or the log bar at the bottom. Say whether Safe Mode was on.
+      description: From the review list, the What changed page, History and Undo, or the log bar at the bottom. Say whether Safe Mode was on.
   - type: textarea
     id: log
     attributes:
