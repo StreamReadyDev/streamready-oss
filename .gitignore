@@ -1,0 +1,25 @@
+# Runtime files StreamReady creates on a user's PC: never part of the source
+license.dat
+*.log
+logs/
+
+# Backups StreamReady (or a user) creates
+*_Backup/
+*.bak
+*.bak-*
+
+# Downloaded third-party tools (fetched at runtime, verified by hash/signature)
+HIDUSBF/
+NPI/
+
+# Build artifacts
+*.exe
+*.zip
+bin/
+obj/
+
+# Editor / OS noise
+.vs/
+.vscode/
+Thumbs.db
+desktop.ini

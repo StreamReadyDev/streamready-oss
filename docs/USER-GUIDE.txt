@@ -1,0 +1,181 @@
+STREAMREADY (OPEN SOURCE EDITION) USER GUIDE
+Version 1.0.0
+
+A plain walk through the app. For what each setting changes, see TWEAKS.txt. For what Undo can and cannot do, see the Undo section of README.txt. For what is new in this release, see CHANGELOG.txt, and the short list at the end of this guide.
+
+
+QUICK START
+
+1. Extract the zip, then double-click "Run StreamReady.bat". Approve the Windows administrator prompt.
+2. Read the short welcome and choose Get started (or press Skip).
+3. On Home, pick a Quick preset or a goal. It opens a list. Nothing is changed yet.
+4. Choose Add to review basket, then Review and apply. Read the list and remove anything you do not want.
+5. Choose Apply now. Read "What changed". Restart if it asks you to.
+
+Changed your mind? Every setting you apply has an Undo. Use the Undo next to one item, or Undo Last Batch (bottom left) for everything you just applied.
+
+
+1. OPENING THE APP
+
+Windows 10 and 11 (64-bit). Administrator permission is needed, because the app changes Windows settings.
+
+- Right-click the zip, choose Properties, tick Unblock, then extract it. This removes the "downloaded from the internet" flag.
+- If Windows shows "Windows protected your PC", choose More info, then Run anyway. The app is an unsigned script, so this is expected. You can check the file against SHA256SUMS.txt.
+- If your antivirus complains, check the file against the hash first. Do not turn your antivirus off.
+- The app always starts in Simple view on a fresh install.
+
+Checking your download (optional, takes a minute):
+Each release has two published SHA-256 hashes (a fingerprint of a file): one for the zip and one for the script inside it. They are listed in SHA256SUMS.txt on the release page and at the bottom of the release notes. To check them, open PowerShell and run:
+    Get-FileHash StreamReady-OSS-v1.0.0.zip -Algorithm SHA256        (run where you saved the zip)
+    Get-FileHash src\StreamReady.ps1 -Algorithm SHA256              (run inside the extracted folder)
+Each result must match its line on the release page exactly. If it does not, do not run the app. Download it again, and ask on the project page if it still differs. The hashes are not printed in this guide because the guide is inside the zip.
+
+Before your first change: save open work and keep a backup of anything important. The app tries to make a Windows restore point before a batch. That can fail, and the app says so. A restore point is a last resort for system settings, not a backup of your files. The app's own Undo is the normal way back.
+
+
+2. SIMPLE VIEW (HOME)
+
+Home has four parts:
+
+- Your PC score. It counts how many of the settings the app can check are already on. It is not a speed test and does not predict FPS.
+- Live readings: CPU, GPU, memory and ping.
+- Quick presets: Gaming and Streaming. Each card shows how many Safe, Careful and Advanced settings it holds and whether a restart is needed. Choosing one opens a preview list.
+- Goals: six free goal tiles, such as Play games smoothly, Stream without lag, Fix my internet and ping, Speed up and clean my PC and Protect my privacy. A goal opens a list with a reason for each item. Only Safe settings are switched on for you.
+
+Two more goal tiles (laptop battery and one specific game) are marked "Paid version". They open a page that explains what the paid edition adds.
+
+On a preset or goal page, switch items on or off, then choose Add to review basket. Nothing runs until you press Apply.
+
+
+3. THE REVIEW BASKET AND RISK LABELS
+
+The basket lists everything you have chosen. Choose Review and apply (bottom right) to open it. Use Remove on anything you do not want, then choose Apply now.
+
+Every setting has a risk label:
+
+  Safe      A low-risk change with an exact Undo. It still changes how your PC behaves, so read it.
+  Careful   May affect a feature, a device or power use that you rely on. Read the trade-off first.
+  Advanced  Needs extra knowledge. You must tick "I understand" before the app applies Advanced settings.
+
+Goals only switch on Safe settings. The presets list Careful items too (and the Gaming and Streaming presets each contain one Advanced item), so check the counts on the card.
+
+Of the 105 settings, 13 are Safe, 82 are Careful and 10 are Advanced.
+
+The label describes risk, not recovery. Undo covers all of them as far as the grades in README.txt allow.
+
+
+4. APPLY, WHAT CHANGED, AND RESTARTS
+
+While the changes run (the app shows an Applying page), keep the window open. The window can look frozen during long jobs such as the corruption scan, downloads and app installs. It is working. The app saves the original of each setting first. If it cannot save an original, it does not change that setting.
+
+"What changed" lists each result:
+- Done: it ran.
+- Skipped: it did not fit your PC or was not needed.
+- Could not apply: it failed. The log at the bottom has the reason.
+
+If a restart is needed, save your work and choose Restart now, or choose Restart later.
+
+Tools marked "Applies immediately" (cleaning temporary files, installing a program and similar) act the moment you click them and do not use the basket. Where an original exists they record it. Some things cannot be put back, for example deleted temporary files. The app says so before it starts.
+
+
+5. UNDO
+
+- One item: choose Undo next to it on "What changed" or in History and Undo.
+- The latest batch: choose Undo Last Batch (bottom left).
+- After closing the app or restarting Windows: open History and Undo. Saved originals from earlier sessions are listed there with their own Undo buttons.
+
+Undo has four grades, shown plainly in the app:
+  Exact              put back exactly as it was.
+  Partly             put back, but something else is needed, such as a restart.
+  Manual             the app cannot do it for you, so it lists the steps (for example OneDrive removal).
+  Cannot be undone   deleted or transient data. The app tells you before you run it.
+
+If an Undo reports a problem it stays in the list so you can try again. It never says "put back" when something was not. Two changes to the same setting are undone newest first: if you try the older one first, the app names the newer one and offers to undo both.
+
+If the list of saved originals is ever damaged, the app stops and says so, and History offers "Start a new undo list" (the damaged file is kept).
+
+
+6. PRO VIEW
+
+Use the Simple / Pro switch at the top. Both views share one basket and one history.
+
+Pro has one list of areas on the left:
+
+  Everything           a searchable list of all settings, with filters and the quick presets
+  Gaming and speed     Game Mode, power plans, graphics scheduling, mouse and input settings
+  Graphics             refresh rate, which graphics card a game uses, graphics card options
+  Internet and network ping and network settings, DNS
+  Privacy              telemetry and tracking
+  Windows tweaks       general Windows behaviour and clean-up
+  Updates and apps     Windows Update behaviour and removing pre-installed apps
+  System and storage   health check, clean-up tools, start-up programs, drives and repairs
+  Downloads            install well-known monitoring and checking tools
+
+Below those: My PC, History and Undo, Settings.
+
+Each setting shows a plain name, a one-line explanation, its risk label and its original name in small grey text. Switches add settings to the basket.
+
+Note: "Select all" on the Everything page ticks every setting that fits your PC, including Careful and Advanced ones, unless Safe Mode is on. Review the list before you apply.
+
+
+7. SAFE MODE, LARGER TEXT AND OTHER SETTINGS
+
+Open Settings (top row in Simple, bottom of the left menu in Pro).
+
+- Safe Mode: only Safe settings can be switched on. Careful and Advanced settings are locked, and so are tools that apply immediately and are not Safe. Select all and the presets then tick only Safe items.
+- Larger text: makes the app content about 15 percent bigger.
+- Show welcome again, Jargon Buster and About.
+
+My PC is a read-only page about your hardware. Opening it changes nothing.
+
+
+8. SEARCH, HELP AND THE LOG
+
+- Search: use the box at the top or press Ctrl+K. Type a word such as "dns" or "telemetry", pick a result with the mouse or the arrow keys and Enter, and press Esc to close. Searching only takes you to a setting. It does not apply anything.
+- Help: explains the app, and has Show welcome again, Jargon Buster and "What the paid version adds".
+- Jargon Buster: plain meanings for technical words.
+- Log: the bar at the bottom shows each change and each undo as it happens. They are also written to a log file in %LOCALAPPDATA%\StreamReady\logs\ (one per day) that you can read.
+
+
+9. THINGS WORTH KNOWING
+
+- Enable OpenSSH Server asks you to confirm before it opens remote login, and has a Disable button beside it.
+- The pagefile tool sets "System managed" sizing. A fixed small size can cause freezes in games.
+- Tools the app downloads (the USB polling tool and Nvidia Profile Inspector) are checked before they run.
+- Windows Update: Default, Security only and Disable each check their own result. Security only defers feature updates for about a year and does not choose which patches Windows installs.
+- The window can be made as small as 900 x 560 and pages scroll.
+
+
+10. WHAT IS NEW IN THIS RELEASE
+
+The full list is in CHANGELOG.txt. In short:
+- The new look: Simple and Pro views, a short welcome, Home with Quick presets and goals, the review basket, What changed, History and Undo, My PC, and one navigation of area pages in Pro with no Classic panels tab.
+- Safe / Careful / Advanced badges on every setting.
+- Safe Mode that also locks tools that act immediately.
+- The full Undo engine, the same as the paid edition, with saved originals that survive a restart.
+- Honest restore point wording: a restore point is tried before a batch and is a last resort.
+- A new app icon.
+
+
+11. COMMON QUESTIONS
+
+Will this give me more FPS?
+There is no fixed promise. Results depend on your PC and games. Make small changes and compare the same game before and after.
+
+Did choosing a goal or preset change Windows?
+No. It only fills the basket. Windows changes only when you press Apply now.
+
+Can I Undo after restarting?
+Yes. Open History and Undo. A few items (such as OneDrive removal) can only show you the steps to put them back by hand, and they say so.
+
+Why was something skipped?
+It may not fit your PC or may not be needed. Check the result and the log. Skipped is not the same as failed.
+
+Something went wrong. What now?
+Choose Undo Last Batch, or use History and Undo, then restart. If a step says it needs manual action, follow the steps shown. A Windows restore point is the last resort.
+
+How is this different from the paid edition?
+Undo, Safe Mode and all the settings in the areas above are free. The paid edition adds the Competitive, Advanced and Laptop presets, the battery and one-game goals, the Game profiles and Hardware areas, a guided first run and Report a problem. The "What the paid version adds" page in Help lists them.
+
+Where do I report a problem or ask for help?
+Open an issue on the project page (see CONTRIBUTING.txt). For security problems see SECURITY.txt. Please do not post private details.

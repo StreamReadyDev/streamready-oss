@@ -1,0 +1,51 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  psscriptanalyzer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          # Errors fail the check. Warnings are listed so they stay visible, but they do not fail it:
+          # the unused-parameter, unused-variable and automatic-variable warnings are known and reviewed (see CONTRIBUTING.txt).
+          $results = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning `
+            -ExcludeRule PSUseApprovedVerbs,PSUseShouldProcessForStateChangingFunctions,PSUseSingularNouns,PSAvoidUsingEmptyCatchBlock
+          $errors = @($results | Where-Object { $_.Severity -eq 'Error' })
+          $warnings = @($results | Where-Object { $_.Severity -ne 'Error' })
+          if ($warnings.Count -gt 0) {
+            Write-Host "PSScriptAnalyzer warnings (not failing the check): $($warnings.Count)"
+            $warnings | Format-Table RuleName, ScriptName, Line -AutoSize | Out-String | Write-Host
+          }
+          if ($errors.Count -gt 0) {
+            $errors | Format-Table -AutoSize | Out-String | Write-Host
+            Write-Error "PSScriptAnalyzer found $($errors.Count) error(s)."
+            exit 1
+          }
+          Write-Host "No PSScriptAnalyzer errors found."
+
+      - name: Syntax check (parser)
+        shell: pwsh
+        run: |
+          $hadErrors = $false
+          Get-ChildItem -Path . -Filter *.ps1 -Recurse | ForEach-Object {
+            $content = [System.IO.File]::ReadAllText($_.FullName, [System.Text.Encoding]::UTF8)
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseInput($content, [ref]$null, [ref]$errors) | Out-Null
+            if ($errors.Count -gt 0) {
+              $hadErrors = $true
+              Write-Host "Syntax errors in $($_.FullName):"
+              $errors | ForEach-Object { Write-Host "  Line $($_.Extent.StartLineNumber): $($_.Message)" }
+            }
+          }
+          if ($hadErrors) { exit 1 }

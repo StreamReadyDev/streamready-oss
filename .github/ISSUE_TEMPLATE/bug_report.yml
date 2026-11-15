@@ -1,0 +1,49 @@
+name: Bug report
+description: Something doesn't work right
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: A clear description of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1.
+        2.
+        3.
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      description: "e.g. Windows 11 24H2. Find this via Settings > System > About."
+  - type: input
+    id: version
+    attributes:
+      label: StreamReady version
+      description: Shown in the About box and the window title.
+  - type: textarea
+    id: tweaks
+    attributes:
+      label: Tweaks applied at the time
+      description: From the review basket, the What changed page, History and Undo, or the log bar at the bottom. Say whether Safe Mode was on.
+  - type: textarea
+    id: log
+    attributes:
+      label: Log file
+      description: If possible, paste the relevant day's log from %LOCALAPPDATA%\StreamReady\logs\
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable.

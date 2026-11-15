@@ -1,0 +1,290 @@
+# Tweaks Reference
+
+Every tweak StreamReady can apply: what it actually changes, how risky it is, and how the undo works. Risk levels:
+
+- **Low**: safe for almost anyone, easily reversible, no real downside.
+- **Medium**: reversible and generally safe, but has a real tradeoff (needs a reboot, affects a specific feature you might rely on, etc.) worth understanding before applying.
+- **High**: a genuine security or stability tradeoff. Never ticked by a goal. The Gaming and Streaming presets list one Advanced item (Keep core Windows in memory), which starts switched on in the preview and still needs the "I understand" tick in the review basket; the other High items are in no preset, and you have to find and select them deliberately. (The "Select all" button on the Pro > Everything page is the exception: it ticks every setting that fits your PC, including these, unless Safe Mode is on, so review the list before you Apply.)
+
+All tweaks below save your PC's actual prior setting before changing anything. How exactly each one can be put back (Exact, Partly, Manual or Cannot be undone) is listed in "What Undo covers and what it cannot" near the end of this file.
+
+A System Restore point is tried before each batch of changes. It can fail (for example if System Restore is turned off), and it is a last resort: Undo uses the saved originals (see the main README).
+
+## Where to find each section in the app
+
+The sections below follow the Pro areas of the app. Simple view reaches the same settings through goals and presets.
+
+| Section in this file | Pro area in the app |
+|---|---|
+| Gaming, Timer Resolution, Advanced Gaming Tweaks | Gaming and speed |
+| GPU - Nvidia & AMD, Hardware-specific | Graphics (and some items in Gaming and speed) |
+| Network | Internet and network |
+| Privacy | Privacy |
+| System | Windows tweaks, and System and storage |
+| Standalone action buttons | System and storage, Internet and network, Updates and apps |
+| Downloads | Downloads |
+
+Everything lists all of them in one searchable list. Game profiles and Hardware areas (MSI / IRQ, per-game configs, CPU Core Optimizer) belong to the paid edition and are not part of this file.
+
+## Risk badges in the app (Safe / Careful / Advanced)
+
+The new interface shows a badge on every setting. It is separate from the Low / Medium / High wording below and is stricter, because it decides what a goal may tick for you.
+
+- **Safe** (13 settings): registry-only, Undo restores your exact original state (including "this value did not exist"), no service, driver or security loss, and the visible effect is small. Goals tick only these. They are: Game Mode; Faster windowed games; Variable refresh rate; Fullscreen tweak (disable fullscreen optimizations); Turn off Game Bar recording; Advertising ID off; Activity history off; PowerShell 7 telemetry opt-out; Block suggested apps; Stop update sharing (two settings); Stop cross-device sync; No surprise restarts after updates.
+- **Careful**: reversible, but it changes how Windows looks or behaves in a way you would notice, or touches services, drivers, power or USB. Never ticked for you; you can add related ones with one optional button.
+- **Advanced**: can affect stability or security. Needs an extra "I understand" tick in the review basket.
+
+Undo: before changing anything, the app saves the original state of what it is about to change (for registry tweaks: whether each key and value existed and what it held) in the protected folder `C:\ProgramData\StreamReady-OSS\undo`, and Undo restores exactly that, also after you close the app or restart Windows. Other kinds of settings (services, power plans, adapters, Windows features, scheduled tasks, files) use the same engine with their own saved originals. What it covers and what it cannot is listed in **What Undo covers and what it cannot** near the end of this file.
+
+---
+
+## Gaming
+
+| Tweak | What it does | Risk |
+|---|---|---|
+| Game Mode | Enables Windows Game Mode | Low |
+| High Performance / Ultimate Performance power plan | Switches the active Windows power plan | Low |
+| HAGS (Hardware-Accelerated GPU Scheduling) | Enables GPU scheduling for lower latency on supported GPUs | Low |
+| Mouse acceleration off | Disables Windows pointer acceleration curve | Low |
+| Keyboard repeat rate | Sets keyboard repeat rate to maximum | Low |
+| Disable Xbox Game Bar / DVR | Turns off background game recording overlay | Low |
+| Disable Fullscreen Optimizations | Turns off Windows' fullscreen compositor optimizations for games that don't need them | Low |
+| Sticky Keys prompt off | Disables the "hold Shift 5x" accessibility prompt | Low |
+| OBS process priority (IFEO) | Raises OBS's process priority via Image File Execution Options | Low |
+| Remove network bandwidth reservation | Removes Windows' reserved 20% bandwidth cap for QoS | Low |
+
+Undo puts the saved original back (see the grades near the end of this file).
+
+## Privacy
+
+| Tweak | What it does | Risk |
+|---|---|---|
+| Telemetry / DiagTrack | Disables the Connected User Experiences and Telemetry service | Low |
+| Activity History | Turns off Windows Activity History collection | Low |
+| Location services | Disables Windows location services | Low |
+| Advertising ID | Disables the per-user advertising identifier | Low |
+| PowerShell 7 telemetry | Disables PS7's own telemetry | Low |
+| Copilot | Disables Windows Copilot | Low |
+| Widgets | Removes the taskbar Widgets/News feed | Low |
+| Consumer Features | Disables Microsoft's "suggested apps" consumer features | Low |
+| Bing Search (Start Menu) | Disables web results in Start Menu search | Low |
+| Background Apps | Restricts apps from running in the background | Low |
+| Remove OneDrive | Uninstalls OneDrive (your files and OneDrive folder are left untouched) | Low |
+| Edge debloat | Disables Edge's sidebar, shopping assistant, and diagnostic data via policy | Low |
+
+Undo puts the saved original back. Edge debloat restores only the 3 specific values it changed, not the whole policy key, in case you had other Edge policies set. Remove OneDrive is Manual: the app lists the steps to reinstall it (see the grades near the end of this file).
+
+## System
+
+| Tweak | What it does | Risk |
+|---|---|---|
+| NumLock on at startup | Low |
+| Show file extensions / hidden files | Low |
+| Right-click "End Task" on taskbar | Low |
+| Dark Mode | Low |
+| Detailed BSOD info | Low |
+| Disable Hibernation | Low |
+| Disable Fast Startup (Hiberboot) | Independent of Hibernation: helps dual-boot reliability and avoids stale driver state | Low |
+| Taskbar centering / search / Task View | Low |
+| Classic right-click context menu | Low |
+| Remove Gallery/Home from File Explorer | Low |
+| Disable IPv6 / deprioritize | Low |
+| Disable Teredo | Low |
+| Disable Storage Sense | Low |
+| Visual effects - Performance mode | Turns off animations, shadows, compositor effects | Low |
+| Non-essential services to Manual | Sets services like Fax, WerSvc, RetailDemo, Xbox services to Manual start and stops them | Low |
+| Verbose logon messages | Low |
+| Classic Start Menu | Low |
+| MPO (Multi-Plane Overlay) off | Works around a known class of display flicker/black-screen bugs on some GPU drivers | Low |
+| UTC hardware clock | **Only relevant if you dual-boot with Linux**: sets the hardware clock to UTC, which is correct for Linux but will show the wrong time in your BIOS/firmware screen and to non-Windows-aware software if you only run Windows. Don't apply this unless you dual-boot. | Low |
+| Hide Settings home page | Low |
+
+Undo puts the saved original back. The Classic Photo Viewer item is Manual (see the grades near the end of this file).
+
+## Network
+
+| Tweak | What it does | Risk |
+|---|---|---|
+| MMCSS responsiveness tuning | Low |
+| Network Throttling Index off | Removes Windows' multimedia network throttle | Low |
+| Disable Nagle's Algorithm | Reduces small-packet latency on your network adapter | Low |
+| Disable power throttling | Low |
+| MMCSS games priority | Low |
+| Disable paging executive | Low |
+| Auto HDR | Low |
+| VRR (Variable Refresh Rate) enable | Low |
+| Windowed-game DirectX optimizations | Low |
+| Disable Delivery Optimization | Stops Windows Update from using your bandwidth to share updates with other PCs on the internet | Low |
+| Lock screen off | Low |
+| Startup sound off | Low |
+| Sound ducking off | Low |
+| Fast shutdown | Low |
+| Show full path in title bar | Low |
+| Classic Photo Viewer as default | Sets the classic Windows Photo Viewer as the default app for common image types | Low |
+| No auto-restart after Windows Update while logged in | Low |
+| Exclude drivers from Windows Update quality updates | Low |
+| Disable Windows Update P2P (Delivery Optimization peer sharing) | Low |
+
+All have an Undo as graded in **What Undo covers and what it cannot** below. Photo Viewer is graded Manual: the app cannot prove which default photo app you had, so it keeps the item in History with the steps to choose it again yourself.
+
+## GPU - Nvidia & AMD
+
+| Tweak | What it does | Risk |
+|---|---|---|
+| Ultra Low Latency mode (Nvidia) | Low-Medium |
+| Frame Buffer Hibernation off (Nvidia) | Low-Medium |
+| P-State lock (Nvidia) | Low-Medium |
+| Texture filtering quality (both vendors) | Low |
+| GPU telemetry service disable (both vendors) | Low |
+| Threaded optimization (Nvidia) | Low |
+| NPI profile apply (Nvidia, via Nvidia Profile Inspector) | Applies a bundled set of Nvidia driver-level settings | Unavailable in this build: undo for this tweak has not been verified on real NVIDIA hardware yet, so the app does not apply it. It is shown as "Temporarily unavailable". |
+| Anti-Lag+ (AMD) | Low |
+| ULPS off (AMD) | Low-Medium |
+| RSR sharpening (AMD) | Low |
+| TDR delay increase (AMD) | Gives the GPU more time before Windows considers it "hung": useful for heavy compute/long shader compiles | Medium |
+| AMD Crash Defender service disable | Low-Medium |
+
+Undo puts the saved original back. The Nvidia game profile tweak is switched off in this build until its Undo has been verified on real NVIDIA hardware (see the grades near the end of this file).
+
+## Timer Resolution
+
+Forces Windows' global timer resolution to 0.5ms for lower input latency, via a small resident helper process (registered to start at logon, since the effect only lasts as long as the calling process is alive).
+
+**Risk: Medium-High.** This is a well-known tradeoff in the enthusiast community: higher timer resolution system-wide can increase power draw and affect battery life/thermals on laptops, continuously, independent of whether a game is actually running. Undo stops the helper process immediately and unregisters the startup task. The helper script is kept in the protected `C:\ProgramData\StreamReady-OSS` folder, and the task starts PowerShell without loading a user profile.
+
+## Advanced Gaming Tweaks
+
+| Tweak | What it does | Risk |
+|---|---|---|
+| Windows Defender game-folder exclusions | Excludes the Steam, Epic, Riot, EA, Battle.net and Activision install folders that exist on your PC, plus Steam library folders listed in Steam's own library file, from real-time antivirus scanning. Folders only: no programs (process names) are excluded. Only ordinary game folders are accepted: not a drive root, not Windows, ProgramData, Program Files itself, a user profile or AppData, nothing reached through a link, and a Steam library must contain a `steamapps` folder. Each folder is checked again just before it is applied. | **High**: this is a real reduction in malware-scanning coverage for those folders. Standard practice among optimization tools, but understand what it does. No preset ticks it (the Select All button does). Undo removes exactly the exclusions it added. |
+| Visual Effects / NTFS optimizations / SysMain disable / Pro Audio MMCSS / USB Selective Suspend off / NIC latency tuning / Memory compression disable | Various low-level performance tweaks | Low-Medium |
+| BCD performance tweaks (dynamic tick off, TSC sync) | Boot configuration changes affecting timer/frame pacing | Medium: boot-adjacent, some need a reboot |
+| CPU Core Parking disable | Prevents CPU cores entering sleep states mid-game | Medium |
+| Win32 Priority Separation | Max CPU time-slice boost for the foreground window | Medium |
+| **Disable VBS / Hyper-V** (labelled with ⚠ in the app) | Removes the Virtualization-Based Security / Hyper-V hypervisor layer entirely, can yield a real FPS uplift on affected systems, but this is a genuine Windows security feature rollback, not just a performance tweak | **High: requires a reboot.** Re-enable before using WSL2 or virtual machines. No preset ticks it, so you have to tick it yourself (the Select all button on Pro > Everything does tick it unless Safe Mode is on). |
+| AHCI Link Power Management off | Stops your SSD/HDD entering low-power states between reads | Medium |
+| TCP per-adapter game tweaks | ACK frequency / NoDelay settings | Low-Medium |
+
+## Hardware-specific
+
+| Tweak | What it does | Risk |
+|---|---|---|
+| Max refresh rate | Sets your display to its highest supported refresh rate | Low |
+| WiFi Gaming Mode | Adjusts WiFi adapter power-saving properties | Low-Medium |
+| Storage Adaptive tweaks | NVMe/SSD/HDD-specific tuning based on detected drive type | Low-Medium |
+| Intel Hybrid CPU - P-Core affinity | On Intel 12th-14th gen (and Core Ultra) hybrid CPUs, raises common game launchers' IFEO priority and sets a Thread Director hint so background tasks prefer efficiency cores | Low-Medium |
+| **AMD: Launcher Priority + CPU Security Mitigation Bypass** | Raises common game launchers' process priority, **and disables the Spectre/Meltdown/L1TF CPU speculative-execution security mitigations system-wide** for a performance gain | **High.** This is the single most security-sensitive tweak in the app. It has its own dedicated button (not a checkbox in any preset): you have to find and click it deliberately (Pro > Gaming and speed). The app logs a clear warning that this is a security tradeoff when you apply it. |
+| PCIe ASPM disable | Disables PCI Express Active State Power Management for lower latency | Medium |
+| Nvidia shader cache | Unlimited/increased Nvidia shader cache size | Low-Medium |
+
+## Standalone action buttons
+
+Most of these are tools marked "Applies immediately" in the app. They do not use the review basket: they act the moment you click them, and the Safe Mode lock disables the ones that are not Safe. You find them in the Pro areas System and storage, Internet and network, and Updates and apps.
+
+| Button | What it does | Risk |
+|---|---|---|
+| Set Pagefile to System Managed | Sets the Windows pagefile back to "System managed" sizing | Low: this used to force a small fixed size, which could cause mid-game freezes under memory pressure (seen in Escape from Tarkov); it now just hands sizing back to Windows, which avoids that failure mode |
+| **Windows Update: Default / Security Only / Disable** | Three buttons in the Updates and apps area. **Default** removes StreamReady's update policies and starts the Windows Update service. **Security Only** defers feature updates for about a year, leaves quality (security) updates switched on, removes anything **Disable** set, and starts the service. It does not control which patches Windows installs. **Disable** turns automatic updates off and stops the service. Each button reads the registry values and the service back afterwards and reports a failure if they are not what was intended. | Default and Security Only: Low. **Disable: High**, because the PC stops receiving security patches until you switch it back. |
+| **Enable OpenSSH Server** | Installs and starts the Windows OpenSSH Server and opens an inbound firewall rule on port 22 | **High.** Shows a confirmation dialog explaining that this allows remote login to your PC before doing anything, and there's a matching **Disable OpenSSH Server** button that stops the service, removes the firewall rule, and uninstalls the Windows capability. |
+| Network reset / Winsock reset / Flush DNS / Reset Windows Update cache / change DNS provider | Standard, self-recovering Windows troubleshooting actions | Low: no different from what any Windows support guide recommends; Windows regenerates this state on its own. These cannot be undone (only DNS changes are saved), and the app says so before it runs them |
+| Install WSL / Hyper-V / Windows Sandbox / .NET / NFS Client | Enables optional Windows features | Low: Undo switches the Windows feature back; downloads and data created by the feature stay, and a restart is needed (see the grades) |
+| Setup / Disable Autologin | Configures Windows to sign in automatically without a password prompt | **High by nature** (bypasses the Windows login screen), but implemented carefully: the password is stored as a real Windows LSA secret (the same mechanism Sysinternals' own Autologon.exe uses), entered through a masked password box: never written to the registry in plain text. A dedicated Disable button clears both the registry flag and the stored secret. |
+
+## Downloads area
+
+Installs well-known free third-party tools via `winget` (HWiNFO, MSI Afterburner, GPU-Z, CPU-Z, CrystalDiskInfo, Process Lasso, CapFrameX, TreeSize Free, Equalizer APO, LatencyMon): standard package-manager installs, no bespoke download handling. **Risk: Low.**
+
+## What Undo covers and what it cannot (every setting)
+
+Both editions of StreamReady use the same Undo engine. Before a setting is changed, the app saves its original state in a protected folder (C:\ProgramData\StreamReady-OSS\undo, next to the folder the paid edition uses but never shared with it), so Undo keeps working after you close the app or restart Windows. "Undo Last Batch", the Undo buttons on the results page and the Undo buttons under History and Undo all use these saved originals. If StreamReady cannot save the original of a setting exactly, it does not change that setting and says so.
+
+How to read the grades below:
+
+- **Exact**: the bounded setting the tweak changes is saved and put back, and the result is read back and checked. This was tested with fixtures and mocks and on one test PC, not in a lab on every kind of hardware.
+- **Partly (non-exact)**: the main setting is put back, but something around it is not (a restart is needed, a program has to be reopened, a download stays installed, or only a subset is covered). The note says what to check.
+- **Manual**: the app cannot do it by itself. It keeps the item in History with the steps until you press "I did these steps". It never says "put back" for a manual item.
+- **Cannot be undone**: deleted or transient data and external repairs. The limit is stated before the action starts and you are asked to confirm.
+
+Rules that apply to everything:
+
+- Two changes on the same setting are undone newest first. If you undo the older one first, StreamReady names the newer one and offers to undo both in the right order.
+- A saved original belongs to the Windows account that made it. Another account cannot restore it, and an old record that is not tied to an account is kept for you to review, not guessed.
+- If the list of saved originals is damaged, or its folder is not safe, StreamReady stops and says so instead of making changes it could not undo. History offers "Start a new undo list" (the damaged file is kept).
+- If an adapter is unplugged when you press Undo for DNS, its saved original is kept: reconnect it and press Undo again, or choose "Give up on this".
+- A saved original that this version cannot use is kept and shown in History with a button to discard it (a copy is kept). Applying that setting again is blocked until you decide.
+- A program that a tool installed is removed by Undo only when the install can be proven to be this tool's own. Otherwise Undo gives you the steps to remove it yourself.
+- The restore point is separate and is never deleted by Undo.
+
+### Settings
+
+| Setting | Grade | What you still do by hand |
+|---|---|---|
+| All registry-only tweaks (Game Mode, Faster windowed games, privacy and Explorer settings and the other registry rows) | Exact | Nothing. A value that did not exist is removed again. |
+| Send game data right away, Send network data instantly | Exact | Nothing. |
+| Network card: send faster | Exact | Nothing. Connections opened while it was on are not changed. |
+| Network card: react to every packet, Wired network: no power-saving dips | Partly | The property is chosen by its display name; check it in the adapter settings if a driver renamed it. |
+| Network card never sleeps | Exact | Restart if Windows asks. |
+| Turn off IPv6 | Exact | Nothing (binding flags on the adapters that were captured). |
+| Turn off Teredo tunnelling | Partly | Both stores are saved. Check the Teredo state if the network misbehaves. |
+| Sharper Windows timer | Exact | Nothing. |
+| Skip scanning game folders | Exact | Nothing. Only the entries the tweak added are removed. |
+| NVIDIA game profile | Cannot be undone for now | Marked "Temporarily unavailable: undo for this tweak has not been verified on real NVIDIA hardware yet." |
+| Remove OneDrive, Classic Photo Viewer | Manual | Follow the steps on screen (reinstall OneDrive, choose the default photo app). |
+| Stop Superfetch, Calm background services | Exact | Nothing normally. If a saved dependent service cannot be restored, the named service is shown. |
+| Stop sending usage data, Stop NVIDIA data collection, Stop AMD data collection | Exact | Nothing normally. |
+| High performance power plan | Exact | Nothing if your original plan still exists. |
+| Maximum power plan | Partly | Check Power Options for a copy this tweak made and remove only that extra copy if you do not want it. |
+| Keep USB devices awake, Keep all CPU cores awake, Keep PCIe parts awake | Partly | The effective value is put back; the original "inherited from the plan" state becomes an explicit value. Restart where noted. |
+| Turn off hibernation | Partly | Free disk space if Undo is refused, then retry. A lost hibernation file cannot be rebuilt. |
+| Stop memory squeezing | Exact | Restart Windows if asked. |
+| Steadier frame timing (boot settings) | Exact | Restart. If the boot entry guard refuses, check the saved boot entry before any manual step. |
+| Turn off VBS (Hyper-V layer) | Partly | Restart; component downloads may be needed; firmware locked VBS has to be changed in firmware settings. |
+| Stop PowerShell 7 data | Exact | Reopen PowerShell 7 or sign out and in. |
+| NVIDIA and AMD graphics settings (lowest-delay mode, keep video memory awake, top speed, texture filtering, Anti-Lag+, graphics sleep, image sharpening) | Partly (image sharpening and lowest-delay mode: Exact) | Restart games or the driver. After a driver update an old value may need your review; the saved value is shown. These are refused when no matching graphics device is found. |
+| Classic right-click menu, Hide Home in Explorer | Partly | Sign in as the same Windows account, then restart Explorer. Custom ownership or permissions on those keys are not restored. |
+
+### Buttons and tools
+
+| Tool | Grade | What you still do by hand |
+|---|---|---|
+| Change DNS (Cloudflare, Google, Quad9, OpenDNS, fastest, back to automatic) | Exact | Reconnect an unplugged adapter and press Undo again, or give it up in History. |
+| Reset network | Partly | Only DNS is saved. Other parts of the reset are done by hand. |
+| Winsock reset, Flush DNS, Clean temp files, Clear shader cache, Disk Cleanup, Process idle tasks, Release standby memory, SFC and DISM repair, Fix winget, USB polling download | Cannot be undone | Deleted or transient data and external repairs cannot be brought back. The limit is shown before the action. |
+| Create restore point | Kept | Undo never deletes a restore point. Creating one may switch System Restore on for drive C:, and that stays on. |
+| Windows Update: Default, Security only | Exact | Restart where asked. |
+| Windows Update: Disable | Partly | Dependent services and policies set by other tools are not covered. |
+| Reset Windows Update cache | Partly | Four service originals are restored. Deleted update folders are not (Windows rebuilds them). |
+| Enable and Disable OpenSSH Server | Partly | Check the SSH feature, credentials and the firewall rule afterwards. |
+| Setup and Disable Autologin | Partly | The stored password cannot be saved. If the old password cannot be put back, automatic sign-in is switched OFF and you enter your password again. An unknown state is manual. |
+| Disable startup program, graphics preference per app | Exact | Nothing (for the Windows account that made the change). |
+| Set max refresh rate | Partly | The primary display only. |
+| Storage adaptive tweaks | Partly | Registry and service subset; restart. |
+| Wi-Fi gaming mode | Partly | The adapter is chosen again by name when you press Undo. |
+| F8 boot menu, registry backup, Intel hybrid CPU priority | Exact | Restart where the tweak says so. |
+| Pagefile: system managed | Partly | Restart; there is a free-space guard. |
+| AMD V-Cache | Partly | Registry subset; restart. |
+| Install WSL, Hyper-V, Windows Sandbox, .NET, NFS, legacy media | Partly | Only the Windows feature state is saved. Downloads, data and distributions stay; restart. |
+| Install apps and the download tools (HWiNFO, Afterburner, GPU-Z, CPU-Z, CrystalDiskInfo, Process Lasso, CapFrameX, TreeSize, Equalizer APO, LatencyMon) | Partly | A package is removed only when its install is proven to be this tool's own, otherwise you uninstall it yourself. Upgrades and your data are not rolled back. |
+
+### What has and has not been tested
+
+The saved-original engine, every kind of setting it covers and the History page were tested with automated suites (fixtures, mocks and throwaway registry keys) and with the app's own self-test, and the window was run on one Windows 11 PC. They were NOT tested in a lab on every kind of hardware: real winget installs and uninstalls, real unplugged adapters, real boot entry changes, real NVIDIA and AMD drivers, a Windows account joined to a work or school directory, and a stored sign-in password were all checked with mocks only. If something is important to you, create your own restore point first.
+
+## The protected folder
+
+Anything StreamReady later runs with administrator rights (the two downloaded tools and the helper script that the scheduled task starts) is kept in `C:\ProgramData\StreamReady-OSS`. That folder is owned by Administrators, Administrators and SYSTEM have full control, and ordinary users can only read it. This matters because a normal program running under your own account could otherwise replace a file that StreamReady is about to run as administrator.
+
+Before every use the folder and everything in it is checked. If it contains a link, a file owned by anyone else, or anything another account can modify, the whole folder is deleted and rebuilt. If it cannot be created and confirmed safe, the tweak stops instead of falling back to an unprotected location. The folder name is different from the commercial edition's, so the two never touch each other's files.
+
+The saved originals for Undo are kept below the same folder (`undo` and `undo-files`). They are checked the same way before they are read or used. A folder that holds saved originals is never deleted or rebuilt automatically: if its permissions are wrong, StreamReady stops and tells you instead of using it. The paid edition keeps its records in `C:\ProgramData\StreamReady`, so the two editions never share or restore each other's records.
+
+## About the download-verification approach (hashes and signatures)
+
+Two items download and run an executable instead of just changing settings. (The Downloads area is different: it installs well-known tools through `winget`, the Windows package manager, with no bespoke download handling.)
+
+- **HIDUSBF** (USB polling rate tool): pinned to one exact file at one exact GitHub commit, verified against a SHA256 hash written in the script (search `src/StreamReady.ps1` for `expectedSha256`) before anything is extracted or run. If the hash does not match, the log says so and it refuses to run it. The download cannot be undone (the tool file stays; see the grades table).
+- **Nvidia Profile Inspector**: always fetches whatever the upstream project's "latest" GitHub release is (so a fixed hash is not possible); it relies on its digital signature instead. It is only used by the NVIDIA game profile tweak, which is switched off in this build until its Undo has been verified on real NVIDIA hardware. The download code is kept for when that tweak is switched on again.
+
+For both, the download is unpacked in a staging folder inside the protected folder and checked there first. The signature check works like this: a valid digital signature is accepted; an unsigned file shows an explicit "this is not verified, run it anyway?" prompt; any other result (tampered, untrusted, or could not be checked) is refused outright. Only a file that passed is moved into the tool cache, and the staging folder is always deleted afterwards.
+
+When a tool is approved, its SHA256 is recorded inside the protected folder (these are the hashes of the downloaded tools, not of StreamReady itself; how to check StreamReady's own hashes is in the README). On later runs the cached copy is used only if it still matches that record and its signature has not broken; otherwise the cache is cleared and the tool is downloaded again. You are not asked the same question twice for an unchanged file. A valid signature proves the file is intact and signed by someone, not who the publisher is, so check the source yourself if that matters to you.

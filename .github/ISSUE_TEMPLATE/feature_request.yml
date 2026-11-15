@@ -1,0 +1,31 @@
+name: Feature request
+description: Suggest a new tweak or feature
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: want
+    attributes:
+      label: What would you like StreamReady to do?
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+  - type: textarea
+    id: change
+    attributes:
+      label: Does this need a registry key, service, or setting change?
+      description: If you know the specific change, include it here (e.g. a known community tweak).
+  - type: textarea
+    id: undo
+    attributes:
+      label: How would you undo it?
+      description: Every tweak needs a working undo. If you have an idea, include it.
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk level
+      description: Safe, Careful or Advanced. See the risk badge section in docs/TWEAKS.txt.
+      options: [Safe, Careful, Advanced, Not sure]

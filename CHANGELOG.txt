@@ -1,0 +1,88 @@
+# Changelog
+
+## [1.0.0] - Initial Open Source Release
+
+StreamReady (Open Source Edition): MIT licensed, fully unlocked, no activation.
+
+### New look (Simple and Pro)
+
+- New top bar (logo, Simple | Pro switch, search, Help, Log, About), a second navigation row, and a bottom bar that is on every screen: Undo Last Batch, the review basket count (Safe / Careful / Advanced) and Review and apply.
+- Simple Home: setup score, live CPU / GPU / RAM / ping tiles, "Fix what matters most", and six free goal tiles. Two goal tiles (laptop battery, one specific game) are marked "Paid version" and open a calm information page.
+- Review basket with risk badges, an "I understand" tick for Advanced items, an applying page, a What changed page with per-item Undo, and History and Undo.
+- Pro: one left navigation of areas (Everything, Gaming and speed, Graphics, Internet and network, Privacy, Windows tweaks, Updates and apps, System and storage, Downloads, My PC, History and Undo, Settings). Every setting and tool is inside its area in the same style as Simple: plain title, one-line description, Safe / Careful / Advanced badge, an "Applies immediately" tag for tools that act at once, and the original name in small grey text. There is no separate old-style panel view any more.
+- Everything page: a searchable list of all 105 settings with filters, plus the Gaming and Streaming quick presets and the selection tools.
+- Quick presets on Home (Gaming, Streaming): a card opens a preview page where every item is a row with a switch, a reason and a badge; "Add to review basket" adds exactly what is switched on.
+- Goal pages are now the same kind of preview: Safe items start switched on, Careful ones are listed and start off, and you can switch any row.
+- A short first-run welcome. A fresh install always starts in Simple, and the Simple | Pro switch, the navigation and the page always agree. "Show welcome again" is in Help and Settings.
+- Safe Mode now also locks every tool that acts immediately and is not Safe (one lock for all of them), as well as the switches. Select all and the presets only tick Safe settings while it is on.
+- Search (top bar and Ctrl+K) finds area pages, tools and settings by plain words and by original names, with helpful empty states.
+- Flat switch rows, dark scrollbars, clearer wording on results and History, and a bottom bar that no longer shows a stale basket after a finished batch.
+- Safe Mode, Larger text, Jargon Buster, My PC page, and Help > What the paid version adds (the list no longer includes Undo: that is in both editions).
+- Every setting now has a Safe, Careful or Advanced badge. 13 are Safe, 82 Careful, 10 Advanced.
+- The full Undo engine, the same as the paid edition: before a setting is changed its original is saved in `C:\ProgramData\StreamReady-OSS\undo`, so Undo works after a restart (History and Undo lists saved originals from earlier sessions). It covers registry values (a value that did not exist is deleted again, a changed value gets its old type and data back, only keys the tweak created are removed), services, power plans, adapters and DNS, Windows features, boot entries, scheduled tasks, files and graphics driver settings. Two changes on one setting are undone newest first, an item that needs your steps stays in History until you confirm it, and a setting whose original cannot be saved exactly is not changed. See "What Undo covers and what it cannot" in the README.
+- A failed undo step is no longer reported as done: it stays in the list so you can retry.
+- New app icon (the S mark). The window can now be as small as 900 x 560.
+- A plain-text user guide, `docs/USER-GUIDE.txt`, walks through the new interface from the first run to Undo.
+- Honest restore point wording everywhere: the app says a restore point is tried before a batch (it can fail, and it is a last resort), and that each setting saves its own original for Undo.
+
+### Speed
+
+- Starting the app is much quicker (about 20 s down to about 8 s on a test PC) because system details, the health report and the Pro pages are no longer prepared before the window is usable. They are prepared in small steps in the background, or when you first open the page that shows them.
+- Switching tabs is quicker: the first visit to Pro went from about 10 s to well under 1 s, and revisiting pages such as System is now fast.
+- Faster internal checks: scheduled-task lookups, CPU load reading, and the search of the page layout. No settings or tweaks changed.
+
+### Fixed
+
+- Remove Widgets / News Feed is now skipped with a clear message (instead of showing as failed) on Windows 11 builds where Windows itself protects that setting. Nothing is changed in that case.
+
+### What's included
+
+- 105 settings and 50+ tools in nine Pro areas: Everything, Gaming and speed, Graphics, Internet and network, Privacy, Windows tweaks, Updates and apps, System and storage, and Downloads.
+- Nvidia / AMD / Intel GPU vendor profiles, plus CPU timer-resolution control.
+- Two presets (Gaming and Streaming) that pre-tick recommended tweaks for review: nothing is added until you choose Add to review basket, and nothing applies until you press Apply now.
+- One Apply now button in the review basket, with Undo Last Batch, an Undo for each single setting, and saved originals that survive a restart.
+- Live Home: setup score and CPU / GPU / RAM / ping tiles, plus a My PC page with your hardware.
+- USB HID polling-rate tool integration (HIDUSBF) and Nvidia Profile Inspector integration, both with verified downloads (see `docs/TWEAKS.txt`).
+
+### Changed from the commercial build
+
+- This edition is deliberately smaller. The Competitive, Advanced and Laptop presets, MSI / IRQ management, per-game configs and the CPU Core Optimizer are part of the paid StreamReady edition and are not included here.
+- All licensing, activation, and `license.dat` handling removed: the app is fully unlocked.
+- A Windows System Restore point is tried before each batch of settings, with a clear explanation if it cannot be made (previously a silent skip). Tools that act immediately do not make one.
+- The pagefile tweak now sets "System managed" instead of a fixed size: the fixed-size behaviour could cause mid-game freezes under memory pressure.
+- The OpenSSH Server toggle now shows a confirmation dialog before enabling remote access, and has a matching disable button.
+- Fixed two tweaks (Remove OneDrive, Classic Photo Viewer) whose undo didn't actually restore anything: both now properly reverse themselves.
+- Narrowed the Edge debloat tweak's undo to only the 3 values it changes, instead of clearing the entire Edge policy key.
+- The USB polling-rate tool download is now pinned to a specific, SHA256-verified file rather than a mutable third-party CDN link.
+- The app now explains in one line why it needs Administrator, before the Windows UAC prompt appears.
+- Every change and undo is now written to a persistent log file at `%LOCALAPPDATA%\StreamReady\logs\`.
+
+### Fixed during pre-release review
+
+- Undoing a batch now runs in reverse order, so tweaks that touch the same setting (for example the High Performance and Ultimate Performance power plans) restore your original value instead of leaving a half-undone state.
+- NIC Latency Tuning no longer also changes Interrupt Moderation (it has its own checkbox), so undo restores it correctly.
+- "Select All" no longer ticks the other graphics vendor's options or the Nvidia shader cache on a non-Nvidia PC, and any tweak that does not apply to your PC is skipped instead of counted as a failure.
+- The pagefile status line now agrees with the "System managed" pagefile tweak.
+- Undoing a batch now also clears it from the "tweaks reset since last applied" list, so the app no longer shows a false warning.
+- Network adapter names and device names containing an apostrophe no longer break undo.
+- Renamed some internal function and control names so Windows Defender no longer flags the script as a false positive. What you see in the app is unchanged.
+
+### Security hardening
+
+- Downloaded tools and the helper script for the Timer Resolution task now lives in `C:\ProgramData\StreamReady-OSS`, a folder only Administrators and SYSTEM can change. It is checked on every use and rebuilt if anything in it looks tampered with. See `docs/TWEAKS.txt`.
+- Downloads are unpacked and checked in a staging folder first. A tool is only used again if it still matches the file you approved. A bad or tampered signature is refused outright; only a plainly unsigned file can be run, and only after you say yes.
+- Values read from the registry or from device and folder names are escaped, including curly quotes, before they are placed in undo scripts, so they cannot be turned into commands.
+- Defender exclusions now cover folders only (no program names) and only ordinary game folders: no drive roots, Windows, user-profile or AppData folders, and nothing reached through a link.
+- Scheduled tasks start PowerShell without loading a user profile, and the app tells you if a task could not be started.
+- The Windows Update buttons now stop on any error, log each step, and only report success after reading the settings and the service back. "Security Only" now really undoes "Disable", and its description says it defers feature updates and does not control which patches Windows installs.
+
+### Verifying this release
+
+- Every release publishes the SHA-256 hash of the release zip and of `src/StreamReady.ps1` in `SHA256SUMS.txt` (attached to the release) and at the bottom of its release notes. How to check them is in the README, in the section about SmartScreen and antivirus warnings.
+- Hashes are not written in this changelog or in the README, because both are inside the zip and the zip's own hash changes whenever they do. Always use the values on the release page for the version you downloaded.
+
+### Known limitations
+
+- See "Known limits" in the README for what is not yet covered, including parts of undo that restore a default instead of your exact earlier setting.
+
+- See `docs/TWEAKS.txt` for the full tweak-by-tweak risk breakdown: a handful of tweaks (Defender exclusions, disabling VBS/Hyper-V, disabling CPU security mitigations, enabling remote access) are genuinely high-risk by design. They're never pre-selected and are clearly labelled.

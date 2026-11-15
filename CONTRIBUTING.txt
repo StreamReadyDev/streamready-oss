@@ -1,0 +1,72 @@
+# Contributing to StreamReady
+
+Thanks for considering a contribution. StreamReady runs as Administrator and changes real system settings on other people's PCs, so the bar for new tweaks is: **safe to run, and safe to undo.**
+
+## Running from source
+
+1. Clone the repo.
+2. Open `src/StreamReady.ps1` and run it in PowerShell (right-click > Run with PowerShell), or:
+   ```powershell
+   powershell -NoProfile -ExecutionPolicy Bypass -File src\StreamReady.ps1
+   ```
+3. It will prompt for Administrator: approve it. It auto-relaunches itself elevated.
+
+No build step: it's a plain PowerShell + WPF/XAML script.
+
+## Code style
+
+- Match the existing style in `src/StreamReady.ps1`: one `Apply-*` function per tweak, each returning an undo scriptblock (or `$null` if there's genuinely nothing to undo).
+- Use `Set-RegLogged` instead of `Set-ItemProperty` directly for registry writes, so the change shows up in the log bar at the bottom of the app and in the log file.
+- Use `Write-SR` for anything worth logging (`'INFO'`, `'OK'`, `'WARN'`, `'FAIL'`, etc.) rather than `Write-Host`.
+
+## Before opening a pull request
+
+1. **Run PSScriptAnalyzer:**
+   ```powershell
+   Install-Module PSScriptAnalyzer -Scope CurrentUser  # first time only
+   Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning
+   ```
+   The same check runs in CI on every push. A few rule categories are intentionally excluded repo-wide (see below), everything else should come back clean.
+2. **Parse-check the script** (or just run it: a syntax error will fail immediately either way):
+   ```powershell
+   $content = Get-Content src\StreamReady.ps1 -Raw
+   [System.Management.Automation.Language.Parser]::ParseInput($content, [ref]$null, [ref]$null)
+   ```
+3. **Actually run the app** and test the tweak you added/changed, including its undo. Check it in both Simple and Pro, and with Safe Mode switched on.
+
+### Intentionally excluded lint rules
+
+- `PSUseApprovedVerbs`: the codebase uses `Apply-*` as its own convention for "apply a tweak and return its undo." Renaming ~140 functions to fit PowerShell's approved-verb list was judged not worth the churn/risk for an internal, single-file script not meant to be imported as a module.
+- `PSUseShouldProcessForStateChangingFunctions`: these functions are internal, called only from button click handlers, not designed to be invoked ad hoc from a shell with `-WhatIf`/`-Confirm`.
+- `PSUseSingularNouns`: same rationale as approved verbs; not worth a mass rename.
+- `PSAvoidUsingEmptyCatchBlock`: used deliberately throughout for genuinely best-effort steps (optional detection, UI cleanup, cosmetic state) that must never block or crash the tweak they're inside. Every catch block that handles something that actually matters already logs via `Write-SR`.
+
+If you add a new tweak that trips one of these for a different reason, fix it rather than assuming it's covered by the exclusion above.
+
+## Every new tweak needs
+
+1. **A working undo.** Capture the real prior value before changing anything (see any existing `Apply-*` function for the pattern): never assume or hardcode a default to restore. The app's Undo engine records the original before the tweak runs, so a new tweak also needs an undo specification: a row in the `UndoSpecs` table for plain registry values, or an engine spec for anything else. A tweak without one is refused by the engine instead of running without an Undo.
+2. **An entry in `docs/TWEAKS.txt`**: what it changes, the risk level, and how the undo works.
+3. **A risk badge and a plain-English description.** Every setting shows Safe, Careful or Advanced and a one-line explanation in everyday words. Safe is only for registry-only settings with an exact Undo, no service, driver or security loss, and a small visible effect. Careful and Advanced settings (and tools that act immediately and are not Safe) are locked by Safe Mode.
+4. **A risk-appropriate default.** Anything that reduces security (Defender exclusions, VBS/Hyper-V, CPU mitigations, remote access, etc.) must default to unticked/off and must not be added to any preset's auto-selected set.
+5. **A try/catch around anything that can throw** (locked files, missing hardware, a service that doesn't exist on this Windows build), fail with a clear `Write-SR 'FAIL'` message, never an unhandled crash.
+
+## Release hashes (for the maintainer; contributors can skip this)
+
+Every release publishes the SHA-256 hash of the release zip and of `src/StreamReady.ps1` (in `SHA256SUMS.txt` and at the bottom of the release notes) so people can check their download.
+
+- Do not add or edit hashes in a pull request. They are not stored in the repository. The maintainer generates them when a release is built, so a hash in a pull request would be wrong the moment the script changes.
+- Any change to `src/StreamReady.ps1` (or to the README, CHANGELOG or docs that go in the zip) changes the hashes. That is expected. Say in the pull request that the release files will need rebuilding.
+- Maintainer: rebuild the zip first, then check that the hashes in `SHA256SUMS.txt` and the release notes match the real files:
+  ```powershell
+  Get-FileHash StreamReady-OSS-v1.0.0.zip -Algorithm SHA256
+  Get-FileHash src\StreamReady.ps1 -Algorithm SHA256
+  ```
+
+## Reporting bugs / requesting features
+
+Use the issue templates: they ask for the specific details needed to reproduce or evaluate a tweak (Windows version, log file, risk level, etc.).
+
+## Security issues
+
+Don't open a public issue: see `SECURITY.txt` for private reporting instructions.
