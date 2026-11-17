@@ -13824,7 +13824,21 @@ function _FileSnapshot_SddlNorm {
     # when a descriptor is applied; they do not change who can access the file. Everything else (owner, group, protected flag, every ACE in order) stays exact.
     param([string]$Sddl)
     if(-not $Sddl){return ''}
-    return [regex]::Replace($Sddl,'D:((?:P|AR|AI|NO_ACCESS_CONTROL)*)',{param($m) 'D:'+$(if($m.Groups[1].Value -match 'P'){'P'}else{''})},'None')
+    # Only the top-level DACL header is touched: find the first 'D:' outside any parentheses (conditional ACE text lives inside parentheses and is never changed).
+    # A null DACL (NO_ACCESS_CONTROL) is kept exactly, so it never compares equal to an empty DACL.
+    $depth=0
+    for($i=0;$i -lt $Sddl.Length-1;$i++){
+        $c=$Sddl[$i]
+        if($c -eq '('){$depth++}
+        elseif($c -eq ')'){if($depth -gt 0){$depth--}}
+        elseif($depth -eq 0 -and $c -eq 'D' -and $Sddl[$i+1] -eq ':'){
+            $rest=$Sddl.Substring($i+2)
+            $m=[regex]::Match($rest,'^(?:P|AR|AI|NO_ACCESS_CONTROL)*')
+            if($m.Value -match 'NO_ACCESS_CONTROL'){return $Sddl}
+            return $Sddl.Substring(0,$i+2)+$(if($m.Value -match 'P'){'P'}else{''})+$rest.Substring($m.Length)
+        }
+    }
+    return $Sddl
 }
 function _FileSnapshot_Comparable {
     param($State)
