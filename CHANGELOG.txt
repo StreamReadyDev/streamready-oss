@@ -1,6 +1,8 @@
 # Changelog
 
 ## [1.0.0] - Initial Open Source Release
+Fixed: Undo of a file change no longer reports a problem when the file was put back correctly and only a Windows permissions flag differed.
+
 Changed: unavailable settings no longer count in the setup score or its suggested changes.
 
 Changed: the review basket is now called the review list.

@@ -13819,11 +13819,18 @@ function _FileSnapshot_Read {
         };$roots+=,$r
     };return @{roots=$roots;totalBytes=$total}
 }
+function _FileSnapshot_SddlNorm {
+    # Verdict only: the auto-inherited (AI) and auto-inheritance-required (AR) DACL control flags are bookkeeping that Windows sets on its own
+    # when a descriptor is applied; they do not change who can access the file. Everything else (owner, group, protected flag, every ACE in order) stays exact.
+    param([string]$Sddl)
+    if(-not $Sddl){return ''}
+    return [regex]::Replace($Sddl,'D:((?:P|AR|AI|NO_ACCESS_CONTROL)*)',{param($m) 'D:'+$(if($m.Groups[1].Value -match 'P'){'P'}else{''})},'None')
+}
 function _FileSnapshot_Comparable {
     param($State)
     $parts=@();foreach($r in @($State.roots)){
         $parts+=("$($r.path.ToLowerInvariant())|$($r.existed)")
-        foreach($e in @($r.entries)){$parts+=("$($e.relative)|$($e.directory)|$($e.attributes)|$($e.sddl)|$($e.creationUtc)|$($e.lastWriteUtc)");foreach($s in @($e.streams)){$parts+=("$($s.name)|$($s.length)|$($s.sha256)")}}
+        foreach($e in @($r.entries)){$parts+=("$($e.relative)|$($e.directory)|$($e.attributes)|$(_FileSnapshot_SddlNorm $e.sddl)|$($e.creationUtc)|$($e.lastWriteUtc)");foreach($s in @($e.streams)){$parts+=("$($s.name)|$($s.length)|$($s.sha256)")}}
     };return ($parts -join [Environment]::NewLine)
 }
 function _FileSnapshot_Bytes {
