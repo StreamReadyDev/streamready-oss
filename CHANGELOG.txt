@@ -1,6 +1,8 @@
 # Changelog
 
 ## [1.0.0] - Initial Open Source Release
+Fixed: Undo no longer treats a program as installed by StreamReady when it matches two packages after an install. It gives manual steps instead of uninstalling.
+
 Fixed: Undo of a file change no longer reports a problem when the file was put back correctly and only a Windows permissions flag differed.
 
 Changed: unavailable settings no longer count in the setup score or its suggested changes.
