@@ -19315,7 +19315,7 @@ function Undo-WingetPackage-PostApply {
         $arpNow = _WingetPackage_Arp
         $before = @($st['arpBefore'])
         $newKeys = @($arpNow.Keys | Where-Object { $before -notcontains $_ })
-        $mine = @(); $after = @{}; $own = @{}; $amb = @(); $claimed = @{}
+        $mine = @(); $after = @{}; $own = @{}; $amb = @(); $claimed = @{}; $allHits = @{}
         foreach ($p in @($st['packages'])) {
             $id = [string]$p['id']
             if ($p['installed']) { continue }
@@ -19324,6 +19324,7 @@ function Undo-WingetPackage-PostApply {
             $nm = _WingetPackage_ListName $id
             $hit = @()
             if ($nm) { foreach ($k in $newKeys) { $f = ([string]$arpNow[$k]).Split('|'); if ($f[0] -ieq $nm -and ([string]$f[1] -eq $ver -or -not $ver)) { $hit += $k } } }
+            foreach ($k in $hit) { if ($allHits.ContainsKey($k)) { $allHits[$k] += $id } else { $allHits[$k] = @($id) } }
             if ($hit.Count -eq 1 -and -not $claimed.ContainsKey($hit[0])) {
                 $claimed[$hit[0]] = $id
                 $f = ([string]$arpNow[$hit[0]]).Split('|')
@@ -19332,7 +19333,7 @@ function Undo-WingetPackage-PostApply {
             } else { $amb += $id }
         }
         # a key claimed by two packages proves neither
-        foreach ($id in @($mine)) { }
+        foreach ($k in @($allHits.Keys)) { if (@($allHits[$k]).Count -gt 1) { foreach ($id in @($allHits[$k])) { if ($mine -contains $id) { $mine = @($mine | Where-Object { $_ -ne $id }); $after.Remove($id); $own.Remove($id); if ($amb -notcontains $id) { $amb += $id } } } } }
         if ($amb.Count -gt 0) { $st['ambiguous'] = ($amb -join ',') }
         $st['installedByEngine'] = @($mine); $st['afterVersions'] = $after; $st['ownership'] = $own; $st['newArpCount'] = $newKeys.Count; $st['postApplyDone'] = $true
         return @{ ok = $true }
